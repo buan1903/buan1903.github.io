@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[CS231n 中的概念 公式 Tricks 总结--神经网络（三）]]></title>
+    <url>%2FArticles%2FCS231n3.html</url>
+    <content type="text"><![CDATA[CS231n 中的概念 公式 Tricks 总结–神经网络（三）神经网络结构 第一个网络有4+2=6个神经元（输入层不算），[3x4]+[4x2]=20个权重，还有4+2=6个偏置，共26个可学习的参数。 第二个网络有4+4+1=9个神经元，[3x4]+[4x4]+[4x1]=32个权重，4+4+1=9个偏置，共41个可学习的参数。 数据预处理零中心化／均值中心化／均值减法 在每个维度上都将数据云的中心都迁移到原点。 1X -= np.mean(X) ？ 这里有个问题 均值中心化能不能提高泛化性能 求大佬解答 归一化指将数据的所有维度都归一化，使其数值范围都近似相等。有两种常用方法可以实现归一化。 第一种是先对数据做零中心化（zero-centered）处理，然后每个维度都除以其标准差 第二种方法是对每个维度都做归一化，使得每个维度的最大和最小值是1和-1。 一般数据预处理流程：左边：原始的2维输入数据。中间：在每个维度上都减去平均值后得到零中心化数据，现在数据云是以原点为中心的。右边：每个维度都除以其标准差来调整其数值范围。红色的线指出了数据各维度的数值范围，在中间的零中心化数据的数值范围不同，但在右边归一化数据中数值范围相同。 PCA和白化（Whitening）PCA先对数据进行零中心化处理，然后计算协方差矩阵 123# 假设输入数据矩阵X的尺寸为[N x D]X -= np.mean(X, axis = 0) # 对数据进行零中心化(重要)cov = np.dot(X.T, X) / X.shape[0] # 得到数据的协方差矩阵 白化操作的输入是特征基准上的数据，然后对每个维度除以其特征值来对数值范围进行归一化。该变换的几何解释是：如果数据服从多变量的高斯分布，那么经过白化后，数据的分布将会是一个均值为零，且协方差相等的矩阵。 wait for update 权重初始化！！！绝对不能全零初始化！！！ 小随机数初始化 权重初始值要非常接近0又不能等于0。解决方法就是将权重初始化为很小的数值，以此来打破对称性。TensorFlow实践的时候，通常使用截断正态分布，然后赋予一个很小的方差。 偏置（biases）的初始化 通常将偏置初始化为0，这是因为随机小数值权重矩阵已经打破了对称性。 批量归一化（Batch Normalization） 让激活数据在训练开始前通过一个网络，网络处理数据使其服从标准高斯分布。应用这个技巧通常意味着全连接层（或者是卷积层）与激活函数之间添加一个BatchNorm层。 正则化RegularizationL2正则化对于网络中的每个权重w，向目标函数中增加一个使用L2正则化意味着所有的权重都以w += -lambda * W向着0线性下降。 L1正则化对于每个w我们都向目标函数增一个。L1和L2正则化也可以进行组合：，这也被称作Elastic net regularizaton。 最大范式约束（Max norm constraints）要求神经元中的权重向量必须满足必须满足 ，一般c值为3或者4。 即使在学习率设置过高的时候，网络中也不会出现数值“爆炸”， 随机失活（Dropout）让神经元以超参数p的概率被激活或者被设置为0。随机失活可以被认为是对完整的神经网络抽样出一些子集，每次基于输入数据只更新子网络的参数。 随机失活可以提高泛化能力，避免网络过度学习到数据中的特征。 参数更新随机梯度下降以及各种更新方法 普通更新 12# 普通更新x += - learning_rate * dx 动量更新 学习率退火就是逐渐减小学习率 随步数衰减：使用一个固定的学习率来进行训练的同时观察验证集错误率，每当验证集错误率停止下降，就乘以一个常数（比如0.5）来降低学习率。 指数衰减。数学公式是，其中alpha0,k是超参数，t是迭代次数（也可以使用周期作为单位）。 1/t衰减的数学公式是，其中alpha0,k是超参数，t是迭代次数。 逐参数适应学习率方法 Adagrad Adam论文中推荐的参数值eps=1e-8, beta1=0.9, beta2=0.999 123m = beta1*m + (1-beta1)*dxv = beta2*v + (1-beta2)*(dx**2)x += - learning_rate * m / (np.sqrt(v) + eps) 模型集成在训练的时候训练几个独立的模型，然后在测试的时候平均它们预测结果。集成的模型数量增加，算法的结果也单调提升（但提升效果越来越少）。还有模型之间的差异度越大，提升效果可能越好。 同一个模型，不同的初始化 在交叉验证中发现最好的模型， 选取其中最好的几个进行集成 一个模型设置多个记录点 在训练的时候跑参数的平均值]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+        <tag>TensorFlow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CS231n 中的概念 公式 Tricks 总结--神经网络（二）]]></title>
+    <url>%2FArticles%2FCS231n2.html</url>
+    <content type="text"><![CDATA[CS231n 中的概念 公式 Tricks 总结–神经网络（二）链式法则 sigmoid函数表达式： 图像： 导数： sigmoid函数：f(z) = 1 / (1 + exp( − z))导数：f(z)’ = f(z)(1 − f(z)) tanh函数：f(z) = tanh(z)导数：f(z)’ = 1 − (f(z))2 BP中的门单元 加法门单元 把输出的梯度相等地分发给它所有的输入取最大值门单元 和加法门不同，取最大值门将梯度转给其中一个输入，这个输入是在前向传播中值最大的那个输入。乘法门单元 交换分量再与传过来梯度相乘得到。 单个神经元模型 常用激活函数比较左边是sigmoid 右边是tanh sigmoid 此函数将实数挤压到0-1之间，很大的负数变成0，很大的正数变成1。缺点： Sigmoid函数饱和使得梯度消失： 观察图像，如果神经元在激活在接近0或1处时会饱和，此时图像上斜率几乎为0，即梯度为0.反向传播的时候，就会在饱和神经元处终止传播。为了防止这个现象，对于权重矩阵W初始化要特别留意，要使得神经元输入WX落到中间的斜率远远大于零的曲线部分。如果初始化权重过大，则大多数神经元将会饱和，导致网络就几乎不学习了。 Sigmoid函数的输出不是零中心的： 如果输入神经元的数据总是正数（比如在f=w^Tx+b中每个元素都x&gt;0），那么关于w的梯度在反向传播的过程中，将会要么全部是正数，要么全部是负数。Sigmoid函数的输出不是零中心的，这将会导致梯度下降权重更新时出现z字型的下降。 Tanh 将实数值压缩到[-1,1]之间。和sigmoid神经元一样，它也存在饱和问题，但是和sigmoid神经元不同的是，它的输出是零中心的。tanh神经元是一个简单放大的sigmoid神经元: ReLu左边是ReLU（校正线性单元：Rectified Linear Unit）激活函数，当x=0时函数值为0。当x&gt;0函数的斜率为1。右边是从 Krizhevsky等的论文中截取的图表，指明使用ReLU比使用tanh的收敛快6倍。 ReLu : 优点：由它的线性，非饱和的公式，ReLu执行梯度下降速度特别快。 优点：通过阈值矩阵计算，节约运算资源。 缺点：存在神经元死亡问题。 Leaky ReLuLeaky ReLU是为解决“ReLU死亡”问题的尝试。ReLU中当x&lt;0时，函数值为0。而Leaky ReLU则是给出一个很小的负数梯度值，比如0.01。所以其函数公式为其中alpha是一个小的常量。Kaiming He等人在2015年发布的论文Delving Deep into Rectifiers中介绍了一种新方法PReLU，把负区间上的斜率当做每个神经元中的一个参数。 Maxout公式： ReLU和Leaky ReLU都是这个公式的特殊情况。 相比于ReLu, 不存在神经元死亡的缺点，但是参数量激增。]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+        <tag>TensorFlow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CS231n 中的概念 公式 Tricks 总结--线性分类器（一）]]></title>
+    <url>%2FArticles%2FCS231n1.html</url>
+    <content type="text"><![CDATA[CS231n 中的概念 公式 Tricks 总结–线性分类器（一）L1距离 L2距离 1distances = np.sqrt(np.sum(np.square(self.Xtr - X[i,:]), axis = 1)) L1 正则化 产生稀疏的权值L2 正则化 产生平滑的权值下面是对损失函数中的正则化项的求梯度运算可以看到 L1 求导 得到两个分立的值 而 L2 求导 得到一个连续值wi几何图示 p次k折交叉验证在实际情况下，人们不是很喜欢用交叉验证，主要是因为它会耗费较多的计算资源。一般直接把训练集按照50%-90%的比例分成训练集和验证集。 当超参数数量多，就需要考虑交叉验证。将数据集D划分为k个大小相似的互斥子集。轮流选取每个子集当作测试集，剩下k-1个子集当作训练集。 这样就可以获得K组训练集／测试集， 可以做K次训练／测试。 最终返回K次训练的平均值。 通常称为“K折交叉验证” K折交叉验证通常随机使用p次不同的划分方式，称为“p次K折交叉验证“。 最终也就是有pk组训练集／测试集 偏差和权重的合并技巧一般常用的方法是把两个参数放到同一个矩阵中，同时x_i向量就要增加一个维度，这个维度的数值是常量1，这就是默认的偏差维度。这样新的公式就简化成下面这样： 多类支持向量机损失 Multiclass Support Vector Machine Loss针对第i个数据的多类SVM的损失函数定义如下：上面的公式是将所有不正确分类（j\not=y_i）加起来。 S是评分函数。关于0的阀值：max(0,-)函数，它常被称为折叶损失（hinge loss） 正则化（Regularization）L2 Norm 作为正则化惩罚 损失函数Loss两部分：数据损失（data loss），即所有样例的的平均损失L_i，以及正则化损失（regularization loss）。 Softmax分类器交叉熵损失（cross-entropy loss）使用f_j来表示分类评分向量f中的第j个元素。和之前一样，整个数据集的损失值是数据集中所有样本数据的损失值L_i的均值与正则化损失R(W)之和。softmax 函数Softmax分类器的输出是归一化的分类概率 注意事项实际编程实现的时候，由于出现了指数项，所以数值可能非常大。除以大数值可能导致数值计算的不稳定。在分式的分子和分母都乘以一个常数C，并把它变换到求和之中。 C 可以自由选择。 通常设置就是应该将向量f中的数值进行平移，使得最大值为0 123# 将f中的值平移到最大值为0：f -= np.max(f) p = np.exp(f) / np.sum(np.exp(f))]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+        <tag>TensorFlow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Softmax Regression 实现识别手写数字]]></title>
+    <url>%2FArticles%2FSoftmax.html</url>
+    <content type="text"><![CDATA[1from tensorflow.examples.tutorials.mnist import input_data 1mnist = input_data.read_data_sets("MNIST_data/", one_hot = True) Extracting MNIST_data/train-images-idx3-ubyte.gz Extracting MNIST_data/train-labels-idx1-ubyte.gz Extracting MNIST_data/t10k-images-idx3-ubyte.gz Extracting MNIST_data/t10k-labels-idx1-ubyte.gz 这里导入MNIST是从网上下载 如果报错 可能是网络问题 可以去极客学院的页面直接下载 然后放到 MNIST_data文件夹1print(mnist.train.images.shape, mnist.train.labels.shape) (55000, 784) (55000, 10) 1print(mnist.test.images.shape, mnist.test.labels.shape) (10000, 784) (10000, 10) 1print(mnist.validation.images.shape, mnist.validation.labels.shape) (5000, 784) (5000, 10) 1import tensorflow as tf 12345678910111213141516171819202122sess = tf.InteractiveSession()x = tf.placeholder(tf.float32, [None, 784]) W = tf.Variable(tf.zeros([784, 10]))b = tf.Variable(tf.zeros([10]))y = tf.nn.softmax(tf.matmul(x, W) + b)#计算交叉熵y_ = tf.placeholder(tf.float32, [None, 10])cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)tf.global_variables_initializer().run()#随机梯度下降 随机抽取一部分样本for i in range(1000): batch_xs, batch_ys = mnist.train.next_batch(100) train_step.run(&#123;x: batch_xs, y_: batch_ys&#125;) correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))print(accuracy.eval(&#123;x: mnist.test.images, y_: mnist.test.labels&#125;)) 0.9165 12]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[在Tensorflow 中实现 多层感知器MLP]]></title>
+    <url>%2FArticles%2FMLP.html</url>
+    <content type="text"><![CDATA[12from tensorflow.examples.tutorials.mnist import input_dataimport tensorflow as tf 12mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)sess = tf.InteractiveSession() Extracting MNIST_data/train-images-idx3-ubyte.gz Extracting MNIST_data/train-labels-idx1-ubyte.gz Extracting MNIST_data/t10k-images-idx3-ubyte.gz Extracting MNIST_data/t10k-labels-idx1-ubyte.gz 12345678# 参数设置in_units = 784h1_units = 300W1 = tf.Variable(tf.truncated_normal([in_units,h1_units],stddev=0.01)) b1 = tf.Variable(tf.zeros([h1_units])) # W2 b2 是输出层的权重及偏置项 W2 = tf.Variable(tf.zeros([h1_units,10])) b2 = tf.Variable(tf.zeros([10])) 12x = tf.placeholder(tf.float32,[None, in_units])keep_prob = tf.placeholder(tf.float32) # dropout 的比率 1234# 定义模型结构hidden1 = tf.nn.relu(tf.matmul(x, W1) + b1)hidden1_drop = tf.nn.dropout(hidden1, keep_prob)y = tf.nn.softmax(tf.matmul(hidden1_drop, W2) + b2) 1234# 定义损失函数和选择优化器y_ = tf.placeholder(tf.float32, [None, 10])cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))train_step = tf.train.AdagradOptimizer(0.3).minimize(cross_entropy) 123456789101112# Step3: 训练,一般来说,越复杂越大规模的神经网络,Dropout的效率越显著。 tf.global_variables_initializer().run() for i in range(3000): batch_xs,batch_ys = mnist.train.next_batch(100) #一共30W样本 train_step.run(&#123;x: batch_xs, y_: batch_ys, keep_prob: 0.75&#125;) # 保留75%的节点,其余都置为0 # Step4: 评估 correct_prediction = tf.equal(tf.argmax(y,1),tf.argmax(y_,1)) # 预测相等的样本数 accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32)) # 准确率 print(accuracy.eval(&#123;x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0&#125;)) 0.9769 12]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[在TensorFlow中实现CNN 识别手写数字]]></title>
+    <url>%2FArticles%2FCNN.html</url>
+    <content type="text"><![CDATA[12from tensorflow.examples.tutorials.mnist import input_dataimport tensorflow as tf 12mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)sess = tf.InteractiveSession() Extracting MNIST_data/train-images-idx3-ubyte.gz Extracting MNIST_data/train-labels-idx1-ubyte.gz Extracting MNIST_data/t10k-images-idx3-ubyte.gz Extracting MNIST_data/t10k-labels-idx1-ubyte.gz 12345678# 权重和偏置的初始化函数def weight_variable(shape): initial = tf.truncated_normal(shape, stddev=0.1) return tf.Variable(initial)def bias_variable(shape): initial = tf.constant(0.1, shape = shape) return tf.Variable(initial) 123456# 卷积层 池化层函数def conv2d(x, W): return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding='SAME')def max_pool_2x2(x): return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME') 1234# 定义输入的placeholderx = tf.placeholder(tf.float32, [None, 784])y_ = tf.placeholder(tf.float32, [None, 10])x_image = tf.reshape(x, [-1,28,28,1]) 12345# 定义第一个卷积层W_conv1 = weight_variable([5,5,1,32]) b_conv1 = bias_variable([32])h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)h_pool1 = max_pool_2x2(h_conv1) 12345# 定义第二个卷积层W_conv2 = weight_variable([5,5,32,64])b_conv2 = bias_variable([64])h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)h_pool2 = max_pool_2x2(h_conv2) 12345# 定义全连层W_fc1 = weight_variable([7 * 7 * 64, 1024])b_fc1 = bias_variable([1024])h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1) 123# 定义dropout层以减轻过拟合keep_prob = tf.placeholder(tf.float32)h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob) 1234# Softmax 层 得到最后的概率输出W_fc2 = weight_variable([1024, 10])b_fc2 = bias_variable([10])y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2) 123# 定义损失函数 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[1]))train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) 12correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32)) 1234567tf.global_variables_initializer().run()for i in range(20000): batch = mnist.train.next_batch(50) if i%100 == 0: train_accuracy = accuracy.eval(feed_dict = &#123;x:batch[0], y_:batch[1], keep_prob: 1.0&#125;) print("step %d, training accuracy %g" % (i, train_accuracy)) train_step.run(feed_dict = &#123;x: batch[0], y_: batch[1], keep_prob: 0.5&#125;) step 0, training accuracy 0.12 step 100, training accuracy 0.84 step 200, training accuracy 0.94 step 300, training accuracy 0.88 step 400, training accuracy 0.96 step 500, training accuracy 0.92 step 600, training accuracy 1 step 700, training accuracy 0.98 step 800, training accuracy 0.94 step 900, training accuracy 1 step 1000, training accuracy 0.92 step 1100, training accuracy 0.98 step 1200, training accuracy 0.98 step 1300, training accuracy 0.98 step 1400, training accuracy 0.98 step 1500, training accuracy 0.98 step 1600, training accuracy 0.96 step 1700, training accuracy 0.98 step 1800, training accuracy 0.94 step 1900, training accuracy 0.94 step 2000, training accuracy 0.96 step 2100, training accuracy 0.98 step 2200, training accuracy 0.94 step 2300, training accuracy 0.94 step 2400, training accuracy 0.98 step 2500, training accuracy 0.98 step 2600, training accuracy 1 step 2700, training accuracy 0.96 step 2800, training accuracy 1 step 2900, training accuracy 0.96 step 3000, training accuracy 0.98 step 3100, training accuracy 0.92 step 3200, training accuracy 1 step 3300, training accuracy 0.98 step 3400, training accuracy 1 step 3500, training accuracy 0.94 step 3600, training accuracy 0.98 step 3700, training accuracy 0.98 step 3800, training accuracy 0.98 step 3900, training accuracy 0.98 step 4000, training accuracy 1 step 4100, training accuracy 1 step 4200, training accuracy 0.98 step 4300, training accuracy 1 step 4400, training accuracy 0.98 step 4500, training accuracy 1 step 4600, training accuracy 1 step 4700, training accuracy 1 step 4800, training accuracy 1 step 4900, training accuracy 0.98 step 5000, training accuracy 0.98 step 5100, training accuracy 0.98 step 5200, training accuracy 0.98 step 5300, training accuracy 1 step 5400, training accuracy 1 step 5500, training accuracy 0.98 step 5600, training accuracy 1 step 5700, training accuracy 0.96 step 5800, training accuracy 0.96 step 5900, training accuracy 1 step 6000, training accuracy 0.98 step 6100, training accuracy 1 step 6200, training accuracy 1 step 6300, training accuracy 1 step 6400, training accuracy 0.98 step 6500, training accuracy 0.96 step 6600, training accuracy 1 step 6700, training accuracy 1 step 6800, training accuracy 1 step 6900, training accuracy 0.98 step 7000, training accuracy 1 step 7100, training accuracy 1 step 7200, training accuracy 1 step 7300, training accuracy 0.96 step 7400, training accuracy 0.98 step 7500, training accuracy 1 step 7600, training accuracy 1 step 7700, training accuracy 1 step 7800, training accuracy 1 step 7900, training accuracy 0.98 step 8000, training accuracy 1 step 8100, training accuracy 0.98 step 8200, training accuracy 0.98 step 8300, training accuracy 1 step 8400, training accuracy 1 step 8500, training accuracy 1 step 8600, training accuracy 1 step 8700, training accuracy 1 step 8800, training accuracy 0.98 step 8900, training accuracy 1 step 9000, training accuracy 1 step 9100, training accuracy 1 step 9200, training accuracy 1 step 9300, training accuracy 0.98 step 9400, training accuracy 0.98 step 9500, training accuracy 0.96 step 9600, training accuracy 1 step 9700, training accuracy 1 step 9800, training accuracy 1 step 9900, training accuracy 0.98 step 10000, training accuracy 1 step 10100, training accuracy 1 step 10200, training accuracy 1 step 10300, training accuracy 1 step 10400, training accuracy 1 step 10500, training accuracy 1 step 10600, training accuracy 1 step 10700, training accuracy 0.98 step 10800, training accuracy 0.98 step 10900, training accuracy 0.98 step 11000, training accuracy 1 step 11100, training accuracy 1 step 11200, training accuracy 1 step 11300, training accuracy 1 step 11400, training accuracy 1 step 11500, training accuracy 1 step 11600, training accuracy 1 step 11700, training accuracy 1 step 11800, training accuracy 1 step 11900, training accuracy 1 step 12000, training accuracy 1 step 12100, training accuracy 0.98 step 12200, training accuracy 1 step 12300, training accuracy 0.98 step 12400, training accuracy 1 step 12500, training accuracy 1 step 12600, training accuracy 1 step 12700, training accuracy 1 step 12800, training accuracy 1 step 12900, training accuracy 1 step 13000, training accuracy 1 step 13100, training accuracy 1 step 13200, training accuracy 1 step 13300, training accuracy 1 step 13400, training accuracy 0.98 step 13500, training accuracy 0.98 step 13600, training accuracy 1 step 13700, training accuracy 1 step 13800, training accuracy 1 step 13900, training accuracy 1 step 14000, training accuracy 1 step 14100, training accuracy 0.98 step 14200, training accuracy 1 step 14300, training accuracy 1 step 14400, training accuracy 1 step 14500, training accuracy 1 step 14600, training accuracy 1 step 14700, training accuracy 1 step 14800, training accuracy 1 step 14900, training accuracy 1 step 15000, training accuracy 1 step 15100, training accuracy 1 step 15200, training accuracy 0.98 step 15300, training accuracy 1 step 15400, training accuracy 1 step 15500, training accuracy 1 step 15600, training accuracy 1 step 15700, training accuracy 1 step 15800, training accuracy 1 step 15900, training accuracy 0.98 step 16000, training accuracy 1 step 16100, training accuracy 1 step 16200, training accuracy 1 step 16300, training accuracy 1 step 16400, training accuracy 1 step 16500, training accuracy 1 step 16600, training accuracy 1 step 16700, training accuracy 1 step 16800, training accuracy 1 step 16900, training accuracy 1 step 17000, training accuracy 1 step 17100, training accuracy 1 step 17200, training accuracy 1 step 17300, training accuracy 1 step 17400, training accuracy 1 step 17500, training accuracy 1 step 17600, training accuracy 1 step 17700, training accuracy 1 step 17800, training accuracy 1 step 17900, training accuracy 1 step 18000, training accuracy 1 step 18100, training accuracy 1 step 18200, training accuracy 1 step 18300, training accuracy 0.98 step 18400, training accuracy 1 step 18500, training accuracy 1 step 18600, training accuracy 1 step 18700, training accuracy 1 step 18800, training accuracy 1 step 18900, training accuracy 1 step 19000, training accuracy 1 step 19100, training accuracy 1 step 19200, training accuracy 1 step 19300, training accuracy 1 step 19400, training accuracy 1 step 19500, training accuracy 1 step 19600, training accuracy 1 step 19700, training accuracy 1 step 19800, training accuracy 1 step 19900, training accuracy 1 1print("test accuracy %g" % accuracy.eval(feed_dict = &#123;x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0&#125;)) test accuracy 0.9916 12]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[随机梯度上升算法Python实现和使用Logistics Regression 分类]]></title>
+    <url>%2FArticles%2FSGD.html</url>
+    <content type="text"><![CDATA[随机梯度上升算法Python实现和使用Logistics Regression 分类随机梯度上升 是指 从不同的W初始值执行进行梯度运算来更新W的值，求得函数最大值，从而使得真实标签与预测标签之间差异最小。将 alpha 前的正号改为符号 即为梯度下降 可以用来求函数的最小值 123456789101112131415161718def stocGradAscent1(dataMatrix, classLabels, numIter = 150): #随机梯度上升 m, n = shape(dataMatrix) alpha = 0.01 #步长 weights = ones(n) for j in range(numIter): dataIndex = range(m) for i in range(m): alpha = 4/(1.0+j+i)+0.01 # alpha 每次减少 1/（j+i） randIndex = int(random.uniform(0, len(dataIndex))) h = sigmoid(sum(dataMatrix[randIndex] * weights)) error = classLabels[randIndex] - h weights = weights + alpha * error * dataMatrix[randIndex] del(dataIndex[randIndex]) return weights 效果：]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[KNN算法的Python实现和用KNN识别手写数字]]></title>
+    <url>%2FArticles%2FKNN.html</url>
+    <content type="text"><![CDATA[KNN算法伪代码：1 计算测试样本与所有数据样本之间的距离2 距离排序3 选取与测试样本距离最小的数据样本K个数据样本4 将K个数据点的标签进行统计并排序5 返回K个数据点中的标签中频率最高的一个标签作为当前测试样本的标签 KNN优点：简单有效精度高KNN缺点: 空间和时间复杂度高 每一次预测 都需要对全部数据进行计算 耗时长 并且 无法给出数据的基础结构信息 一个满足实际需求的模型 应该是测试的时间远远短与训练的时间 ####KNN算法的Python实现123456789101112131415161718192021222324252627282930313233def classify0(inX, dataSet, labels, k): dataSetSize = dataSet.shape[0] # numpy中 shape[0] 读取行数 shape[1]读取列数 diffMat = tile(inX, (dataSetSize, 1)) - dataSet # 这里 tile(A,reps) 函数 表示 将 inA 按照 第一维度复制 dataSetSize 次 # 第二维度 复制1次 得到一个 数组 即得到和数据集对应的全零数组 # 然后对位计算和数据集的差值 # 对于单个点 就是 [x-x0,y-y0] sqDiffMat = diffMat ** 2 sqDistance = sqDiffMat.sum(axis=1) # 按照第二维度 即横向 来计算和 也就是 (x-x0)^2 + (y-y0)^2 distances = sqDistance ** 0.5 # 开根号得到 欧式距离 即 Euclidean Norm 或者 L2 Norm sortedDistIndicies = distances.argsort() # 对距离进行排序 argsort()将distances从小到大排序 返回索引 classCount=&#123;&#125; # 新建类别字典 for i in range(k): voteIlable = labels[sortedDistIndicies[i]] # 提取K个最近的距离的数据点的索引 classCount[voteIlable] = classCount.get(voteIlable, 0) + 1 # Dict.get(key, default = None) 这个方法按key索值 如果没有则返回默认值 # 这里查询到了则+1 没有查询到 则 将新建一个键值对 key = voteIlable 值为 0 + 1 sortedClassCount = sorted(classCount.iteritems(), key = operator.itemgetter(1), reverse=True) # Dict.iteritems() 返回一个迭代器对象 # operator.itemgetter(1) 定义了一个函数 作用到迭代器上 获取对象第一个域的值 # sorted（排序对象 一个list或者iterator对象，key 排序的根据，顺序 默认flase(升序排列) true则是降序排列 # 这里是按照 最邻近的K个数据点 的分类 出现的频率排列 return sortedClassCount[0][0] # 判断K个里面出现最多次数的分类 作为当前点的分类 用KNN识别手写数字数据是01组成的字符串矩阵： 数据处理： 1234567891011def img2vector(filename): returnVect = zeros((1,1024)) fr = open(filename) for i in range(32): lineStr = fr.readline() for j in range(32): returnVect[0, 32*i + j] = int(lineStr[j]) return returnVect``` 测试： def handwritingClassTest(): hwLabels = [] trainingFileList = os.listdir(‘digits/trainingDigits’) #获取目录 m = len(trainingFileList) trainingMat = zeros((m, 1024)) for i in range(m): fileNameStr = trainingFileList[i] fileStr = fileNameStr.split(&apos;.&apos;)[0] classNumStr = int(fileStr.split(&apos;_&apos;)[0]) #获取文件名并解析出数字 hwLabels.append(classNumStr) trainingMat[i, :] = img2vector(&apos;digits/trainingDigits/%s&apos; % fileNameStr) testFileList = os.listdir(&apos;digits/testDigits&apos;) errorCount = 0.0 mTest = len(testFileList) for i in range(mTest): fileNameStr = testFileList[i] fileStr = fileNameStr.split(&apos;.&apos;)[0] classNumStr = int(fileStr.split(&apos;_&apos;)[0]) vectorUnderTest = img2vector(&apos;digits/testDigits/%s&apos; % fileNameStr) classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 7) print &quot;the classifier came back with: %d, the real answer is : %d&quot; %(classifierResult, classNumStr) if(classifierResult != classNumStr) : errorCount += 1.0 print &quot;\nthe total number of errors is : %d&quot; % errorCount print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest)) ``` 效果：]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Machine Learning Assignments]]></title>
+    <url>%2FArticles%2Ftest01.html</url>
+    <content type="text"><![CDATA[Machine Learning Foundations: A Case Study Approach这门课深入浅出地介绍了机器学习方法的各种典型案例和概念下面是我完成的这门基础课程的一些课程作业和总结的概念集合 Regression： Linear Regression Overfitting Training/Test Curves Mulitiple Linear Regression 运用回归算法进行房价预测 Classification: Classifier Model Linear Classifier Model RSS: Residual sum of squares Decision Boundaries Classification error &amp; accuracy Confusion matrix(binary classification &amp; multiclass classification) Learning curves (Relationship between the amount of training data and the test error) Bias of model 产品评论情感分析 Clustering and Similarity Bag of words model Local frequency &amp; global rarity TF-IDF document representation (Term frequency – inverse document frequency) 1-Nearest neighbor &amp; K-Nearest neighbor Clustering K-means algorithm 应用聚类进行维基文章检索 Product recommendations Simplest approach: Popularity Classification model Co-occurrence matrix Jaccard similarity matrix factorization Matrix factorization model Precision-recall curve area under the curve (AUC) 用户歌曲推荐 Deep Learning XOR: a⊕b = (¬a ∧ b) ∨ (a ∧¬b) Neural network Image features (local detectors &amp; collections of locally interesting points) RIFT Deep learning Pros and Cons Transfer learning: Use data from one task to help learn on another 运用迁移学习的方法利用深度特征进行图片分类运用迁移学习的方法利用深度特征进行图片检索]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+        <tag>Python</tag>
+        <tag>Tech</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[关于]]></title>
+    <url>%2FArticles%2Ftest.html</url>
+    <content type="text"><![CDATA[我这是我的第一个博客 感谢你的来访 刘钰安 or Yuan LiuNikeName: 钰安 安安 元吉他手 Programmer微博 LyAn_nAyL / 微信 buan1903 / 邮箱 yuanliu699@foxmail.com / GitHub buan1903 目的??? : “他会经常忘记代码的语法和一些API，所以他经常需要去查API甚至查语法，他觉得没有Google我几乎没法工作。这在某些人的眼里，是技术不够的表现。他记的只是一个Key，一个如何找寻答案的索引，而不是全部，人脑不是电脑，他不可能要求我能记下所有的东西。” 建立这个博客目的是 整理 和 查阅 以及 自由而纯粹的中英文写作 什么九五年七夕生 狮子座 南昌大学 一七年 行将毕业 热爱电吉他 偶像是 Pual Gilbert Steve Vai &amp; 小林信一最近爱听Children of Bodom也听民谣听不懂流行乐 一点也不practial 大一开始组乐队 名为 the dreamer 遇到了一帮很好的队友 参加了当年的微光音乐节大二组建了 逆旅乐队 参加了一些演出 过的很开心大三 组建了 北城以北乐队 玩民谣 玩随便什么只要开心就好今年春天 北城以北乐队即将举办毕业专场 一定来看 热爱技术大二开始学习网页技术 html等 还使用过ruby&amp;ruby on rails同时开始接触Android 和早点到团队队友们 开发了一个应用 现在将转向深度学习方向 想去读个PhD目前正在学习Andrew Ng 的 CS229 Machine Learning 厌恶家庭生活 喜欢独居 本来就颇为缺乏的决策力 倾向做更有意义的选择不愿囿于昼夜 厨房与爱 last 大事记 2017 一月底 建立博客]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Diary</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[zaodiandao]]></title>
+    <url>%2FArticles%2Fzaodiandao.html</url>
+    <content type="text"><![CDATA[This is a breakfast booking application that my teammates and I developed on 2014. We participate in the The First China Youth Innovation Entrepreneurship APP Competition and won the Excellence Prize. For more details on technology, please go to github repository. I am proud of my teammates. Click here for Introduction Movie.]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[My Jackson Kelly Guitar]]></title>
+    <url>%2FArticles%2Fpost-myguitar.html</url>
+    <content type="text"><![CDATA[This is my Jackson Kelly Guitar]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Diary</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <url>%2FArticles%2Fhello-world%202.html</url>
+    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
+      <categories>
+        <category>Articles</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+        <tag>TensorFlow</tag>
+        <tag>Machine Learning</tag>
+        <tag>Diary</tag>
+        <tag>Java</tag>
+        <tag>Python</tag>
+        <tag>Android</tag>
+        <tag>Computer Vision</tag>
+        <tag>NLP</tag>
+        <tag>Web</tag>
+        <tag>Tech</tag>
+        <tag>Hexo</tag>
+        <tag>Github</tag>
+        <tag>Git</tag>
+        <tag>Music</tag>
+        <tag>Guitar</tag>
+        <tag>Undefined</tag>
+      </tags>
+  </entry>
+</search>

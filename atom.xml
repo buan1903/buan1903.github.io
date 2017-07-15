@@ -1,0 +1,860 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Yuan&#39;s Blog</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://www.liuyuan.live/"/>
+  <updated>2017-03-31T04:10:03.000Z</updated>
+  <id>https://www.liuyuan.live/</id>
+  
+  <author>
+    <name>LIU YUAN</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CS231n 中的概念 公式 Tricks 总结--神经网络（三）</title>
+    <link href="https://www.liuyuan.live/Articles/CS231n3.html"/>
+    <id>https://www.liuyuan.live/Articles/CS231n3.html</id>
+    <published>2017-03-31T03:52:46.000Z</published>
+    <updated>2017-03-31T04:10:03.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="CS231n-中的概念-公式-Tricks-总结–神经网络（三）"><a href="#CS231n-中的概念-公式-Tricks-总结–神经网络（三）" class="headerlink" title="CS231n 中的概念 公式 Tricks 总结–神经网络（三）"></a>CS231n 中的概念 公式 Tricks 总结–神经网络（三）</h1><h3 id="神经网络结构"><a href="#神经网络结构" class="headerlink" title="神经网络结构"></a>神经网络结构</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909280613993.png" alt=""></p>
+<ul>
+<li>第一个网络有4+2=6个神经元（输入层不算），[3x4]+[4x2]=20个权重，还有4+2=6个偏置，共26个可学习的参数。</li>
+<li>第二个网络有4+4+1=9个神经元，[3x4]+[4x4]+[4x1]=32个权重，4+4+1=9个偏置，共41个可学习的参数。</li>
+</ul>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p><strong>零中心化／均值中心化／均值减法</strong> 在每个维度上都将数据云的中心都迁移到原点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">X -= np.mean(X)</div></pre></td></tr></table></figure>
+<p>？ 这里有个问题 均值中心化能不能提高泛化性能 求大佬解答</p>
+<p><strong>归一化</strong><br>指将数据的所有维度都归一化，使其数值范围都近似相等。有两种常用方法可以实现归一化。</p>
+<ul>
+<li>第一种是先对数据做零中心化（zero-centered）处理，然后每个维度都除以其标准差</li>
+<li>第二种方法是对每个维度都做归一化，使得每个维度的最大和最小值是1和-1。</li>
+</ul>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909287679399.png" alt=""></p>
+<blockquote>
+<p>一般数据预处理流程：左边：原始的2维输入数据。中间：在每个维度上都减去平均值后得到零中心化数据，现在数据云是以原点为中心的。右边：每个维度都除以其标准差来调整其数值范围。红色的线指出了数据各维度的数值范围，在中间的零中心化数据的数值范围不同，但在右边归一化数据中数值范围相同。</p>
+</blockquote>
+<p><strong>PCA和白化（Whitening）</strong><br><strong>PCA</strong>先对数据进行零中心化处理，然后计算协方差矩阵</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># 假设输入数据矩阵X的尺寸为[N x D]</div><div class="line">X -= np.mean(X, axis = 0) # 对数据进行零中心化(重要)</div><div class="line">cov = np.dot(X.T, X) / X.shape[0] # 得到数据的协方差矩阵</div></pre></td></tr></table></figure>
+<p><strong>白化</strong>操作的输入是特征基准上的数据，然后对每个维度除以其特征值来对数值范围进行归一化。<br>该变换的几何解释是：如果数据服从多变量的高斯分布，那么经过白化后，数据的分布将会是一个均值为零，且协方差相等的矩阵。</p>
+<p>wait for update</p>
+<h3 id="权重初始化"><a href="#权重初始化" class="headerlink" title="权重初始化"></a>权重初始化</h3><p><strong>！！！绝对不能全零初始化！！！</strong> </p>
+<p><strong>小随机数初始化</strong> 权重初始值要非常接近0又不能等于0。解决方法就是将权重初始化为很小的数值，以此来打破对称性。TensorFlow实践的时候，通常使用截断正态分布，然后赋予一个很小的方差。</p>
+<p><strong>偏置（biases）的初始化</strong> 通常将偏置初始化为0，这是因为随机小数值权重矩阵已经打破了对称性。</p>
+<p><strong>批量归一化（Batch Normalization）</strong> 让激活数据在训练开始前通过一个网络，网络处理数据使其服从标准高斯分布。应用这个技巧通常意味着全连接层（或者是卷积层）与激活函数之间添加一个BatchNorm层。</p>
+<h3 id="正则化Regularization"><a href="#正则化Regularization" class="headerlink" title="正则化Regularization"></a>正则化Regularization</h3><p><strong>L2正则化</strong><br>对于网络中的每个权重w，向目标函数中增加一个<img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909296119811.jpg" alt=""><br>使用L2正则化意味着所有的权重都以w += -lambda * W向着0线性下降。</p>
+<p><strong>L1正则化</strong><br>对于每个w我们都向目标函数增一个<img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909297033262.jpg" alt="">。L1和L2正则化也可以进行组合：<img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909296924131.jpg" alt=""><br>，这也被称作Elastic net regularizaton。</p>
+<p><strong>最大范式约束（Max norm constraints）</strong><br>要求神经元中的权重向量必须满足<img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909298042017.jpg" alt="">必须满足<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909298101346.jpg" alt=""> ，一般c值为3或者4。</p>
+<p>即使在学习率设置过高的时候，网络中也不会出现数值“爆炸”，</p>
+<p><strong>随机失活（Dropout）</strong><br>让神经元以超参数p的概率被激活或者被设置为0。<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909298674291.png" alt=""><br>随机失活可以被认为是对完整的神经网络抽样出一些子集，每次基于输入数据只更新子网络的参数。</p>
+<p>随机失活可以提高泛化能力，避免网络过度学习到数据中的特征。</p>
+<h3 id="参数更新"><a href="#参数更新" class="headerlink" title="参数更新"></a>参数更新</h3><h4 id="随机梯度下降以及各种更新方法"><a href="#随机梯度下降以及各种更新方法" class="headerlink" title="随机梯度下降以及各种更新方法"></a>随机梯度下降以及各种更新方法</h4><ul>
+<li>普通更新</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 普通更新</div><div class="line">x += - learning_rate * dx</div></pre></td></tr></table></figure>
+<ul>
+<li>动量更新</li>
+</ul>
+<h4 id="学习率退火"><a href="#学习率退火" class="headerlink" title="学习率退火"></a>学习率退火</h4><p>就是逐渐减小学习率</p>
+<ul>
+<li><p>随步数衰减：使用一个固定的学习率来进行训练的同时观察验证集错误率，每当验证集错误率停止下降，就乘以一个常数（比如0.5）来降低学习率。</p>
+</li>
+<li><p>指数衰减。数学公式是<img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909303723235.jpg" alt="">，其中alpha0,k是超参数，t是迭代次数（也可以使用周期作为单位）。</p>
+</li>
+<li>1/t衰减的数学公式是<img src="http://okn3yh48r.bkt.clouddn.com/media/14909281700187/14909304139062.jpg" alt="">，其中alpha0,k是超参数，t是迭代次数。</li>
+</ul>
+<h4 id="逐参数适应学习率方法"><a href="#逐参数适应学习率方法" class="headerlink" title="逐参数适应学习率方法"></a>逐参数适应学习率方法</h4><ul>
+<li>Adagrad</li>
+<li>Adam<br>论文中推荐的参数值eps=1e-8, beta1=0.9, beta2=0.999</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">m = beta1*m + (1-beta1)*dx</div><div class="line">v = beta2*v + (1-beta2)*(dx**2)</div><div class="line">x += - learning_rate * m / (np.sqrt(v) + eps)</div></pre></td></tr></table></figure>
+<h3 id="模型集成"><a href="#模型集成" class="headerlink" title="模型集成"></a>模型集成</h3><p>在训练的时候训练几个独立的模型，然后在测试的时候平均它们预测结果。集成的模型数量增加，算法的结果也单调提升（但提升效果越来越少）。还有模型之间的差异度越大，提升效果可能越好。</p>
+<ul>
+<li>同一个模型，不同的初始化</li>
+<li>在交叉验证中发现最好的模型， 选取其中最好的几个进行集成</li>
+<li>一个模型设置多个记录点</li>
+<li>在训练的时候跑参数的平均值</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;CS231n-中的概念-公式-Tricks-总结–神经网络（三）&quot;&gt;&lt;a href=&quot;#CS231n-中的概念-公式-Tricks-总结–神经网络（三）&quot; class=&quot;headerlink&quot; title=&quot;CS231n 中的概念 公式 Tricks 总结–神经网络（三）&quot;&gt;&lt;/a&gt;CS231n 中的概念 公式 Tricks 总结–神经网络（三）&lt;/h1&gt;&lt;h3 id=&quot;神经网络结构&quot;&gt;&lt;a href=&quot;#神经网络结构&quot; class=&quot;headerlink&quot; title=&quot;神经网络结构&quot;&gt;&lt;/a&gt;神经网络结构&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909280613993.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一个网络有4+2=6个神经元（输入层不算），[3x4]+[4x2]=20个权重，还有4+2=6个偏置，共26个可学习的参数。&lt;/li&gt;
+&lt;li&gt;第二个网络有4+4+1=9个神经元，[3x4]+[4x4]+[4x1]=32个权重，4+4+1=9个偏置，共41个可学习的参数。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;数据预处理&quot;&gt;&lt;a href=&quot;#数据预处理&quot; class=&quot;headerlink&quot; title=&quot;数据预处理&quot;&gt;&lt;/a&gt;数据预处理&lt;/h3&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+      <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CS231n 中的概念 公式 Tricks 总结--神经网络（二）</title>
+    <link href="https://www.liuyuan.live/Articles/CS231n2.html"/>
+    <id>https://www.liuyuan.live/Articles/CS231n2.html</id>
+    <published>2017-03-31T03:52:40.000Z</published>
+    <updated>2017-03-31T04:12:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="CS231n-中的概念-公式-Tricks-总结–神经网络（二）"><a href="#CS231n-中的概念-公式-Tricks-总结–神经网络（二）" class="headerlink" title="CS231n 中的概念 公式 Tricks 总结–神经网络（二）"></a>CS231n 中的概念 公式 Tricks 总结–神经网络（二）</h1><h3 id="链式法则"><a href="#链式法则" class="headerlink" title="链式法则"></a>链式法则</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909253377937.jpg" alt=""><br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909253418799.jpg" alt=""></p>
+<h3 id="sigmoid函数"><a href="#sigmoid函数" class="headerlink" title="sigmoid函数"></a>sigmoid函数</h3><p>表达式： <img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909255411531.jpg" alt=""></p>
+<p>图像： </p>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909254783804.jpg" alt=""></p>
+<p>导数：<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909255930060.jpg" alt=""></p>
+<p>sigmoid<br>函数：f(z) = 1 / (1 + exp( − z))<br>导数：f(z)’ = f(z)(1 − f(z))</p>
+<p>tanh<br>函数：f(z) = tanh(z)<br>导数：f(z)’ = 1 − (f(z))2</p>
+<h3 id="BP中的门单元"><a href="#BP中的门单元" class="headerlink" title="BP中的门单元"></a>BP中的门单元</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909257294395.jpg" alt=""></p>
+<p><strong><strong>加法门单元</strong></strong> 把输出的梯度相等地分发给它所有的输入<br><strong><strong>取最大值门单元</strong></strong> 和加法门不同，取最大值门将梯度转给其中一个输入，这个输入是在前向传播中值最大的那个输入。<br><strong><strong>乘法门单元</strong></strong> 交换分量再与传过来梯度相乘得到。</p>
+<h3 id="单个神经元模型"><a href="#单个神经元模型" class="headerlink" title="单个神经元模型"></a>单个神经元模型</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909261470465.png" alt=""></p>
+<h3 id="常用激活函数比较"><a href="#常用激活函数比较" class="headerlink" title="常用激活函数比较"></a>常用激活函数比较</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909262098649.png" alt=""><br>左边是sigmoid  右边是tanh</p>
+<p><strong>sigmoid</strong><br>  此函数将实数挤压到0-1之间，很大的负数变成0，很大的正数变成1。缺点：</p>
+<blockquote>
+<p>  <strong>Sigmoid函数饱和使得梯度消失</strong>： 观察图像，如果神经元在激活在接近0或1处时会饱和，此时图像上斜率几乎为0，即梯度为0.反向传播的时候，就会在饱和神经元处终止传播。为了防止这个现象，对于权重矩阵W初始化要特别留意，要使得神经元输入WX落到中间的斜率远远大于零的曲线部分。如果初始化权重过大，则大多数神经元将会饱和，导致网络就几乎不学习了。</p>
+<p> <strong>Sigmoid函数的输出不是零中心的</strong>： 如果输入神经元的数据总是正数（比如在f=w^Tx+b中每个元素都x&gt;0），那么关于w的梯度在反向传播的过程中，将会要么全部是正数，要么全部是负数。Sigmoid函数的输出不是零中心的，这将会导致梯度下降权重更新时出现z字型的下降。</p>
+</blockquote>
+<p><strong>Tanh</strong><br> 将实数值压缩到[-1,1]之间。和sigmoid神经元一样，它也存在饱和问题，但是和sigmoid神经元不同的是，它的输出是零中心的。tanh神经元是一个简单放大的sigmoid神经元:<img src="/Articles/media/14909252301479/14909269359605.jpg" alt=""></p>
+<p><strong>ReLu</strong><br>左边是ReLU（校正线性单元：Rectified Linear Unit）激活函数，当x=0时函数值为0。当x&gt;0函数的斜率为1。右边是从 Krizhevsky等的论文中截取的图表，指明使用ReLU比使用tanh的收敛快6倍。<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909270657937.png" alt=""></p>
+<p>ReLu :  <img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909270584102.jpg" alt=""></p>
+<blockquote>
+<p> 优点：由它的线性，非饱和的公式，ReLu执行梯度下降速度特别快。<br> 优点：通过阈值矩阵计算，节约运算资源。<br> 缺点：存在神经元死亡问题。</p>
+</blockquote>
+<p><strong>Leaky ReLu</strong><br>Leaky ReLU是为解决“ReLU死亡”问题的尝试。ReLU中当x&lt;0时，函数值为0。而Leaky ReLU则是给出一个很小的负数梯度值，比如0.01。所以其函数公式为<img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909277959935.jpg" alt=""><br>其中alpha是一个小的常量。<br>Kaiming He等人在2015年发布的论文<a href="https://arxiv.org/abs/1502.01852" target="_blank" rel="external">Delving Deep into Rectifiers</a>中介绍了一种新方法PReLU，把负区间上的斜率当做每个神经元中的一个参数。</p>
+<p><strong>Maxout</strong><br>公式： <img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909279393660.jpg" alt=""><br>ReLU和Leaky ReLU都是这个公式的特殊情况。 相比于ReLu, 不存在神经元死亡的缺点，但是参数量激增。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;CS231n-中的概念-公式-Tricks-总结–神经网络（二）&quot;&gt;&lt;a href=&quot;#CS231n-中的概念-公式-Tricks-总结–神经网络（二）&quot; class=&quot;headerlink&quot; title=&quot;CS231n 中的概念 公式 Tricks 总结–神经网络（二）&quot;&gt;&lt;/a&gt;CS231n 中的概念 公式 Tricks 总结–神经网络（二）&lt;/h1&gt;&lt;h3 id=&quot;链式法则&quot;&gt;&lt;a href=&quot;#链式法则&quot; class=&quot;headerlink&quot; title=&quot;链式法则&quot;&gt;&lt;/a&gt;链式法则&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909253377937.jpg&quot; alt=&quot;&quot;&gt;&lt;br&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909253418799.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;sigmoid函数&quot;&gt;&lt;a href=&quot;#sigmoid函数&quot; class=&quot;headerlink&quot; title=&quot;sigmoid函数&quot;&gt;&lt;/a&gt;sigmoid函数&lt;/h3&gt;&lt;p&gt;表达式： &lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909255411531.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+      <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CS231n 中的概念 公式 Tricks 总结--线性分类器（一）</title>
+    <link href="https://www.liuyuan.live/Articles/CS231n1.html"/>
+    <id>https://www.liuyuan.live/Articles/CS231n1.html</id>
+    <published>2017-03-31T03:52:26.000Z</published>
+    <updated>2017-07-15T18:44:46.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="CS231n-中的概念-公式-Tricks-总结–线性分类器（一）"><a href="#CS231n-中的概念-公式-Tricks-总结–线性分类器（一）" class="headerlink" title="CS231n 中的概念 公式 Tricks 总结–线性分类器（一）"></a>CS231n 中的概念 公式 Tricks 总结–线性分类器（一）</h1><h3 id="L1距离-L2距离"><a href="#L1距离-L2距离" class="headerlink" title="L1距离 L2距离"></a>L1距离 L2距离</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909221409973.jpg" alt=""></p>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909220524528.jpg" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">distances = np.sqrt(np.sum(np.square(self.Xtr - X[i,:]), axis = 1))</div></pre></td></tr></table></figure>
+<p>L1 正则化 产生稀疏的权值<br>L2 正则化 产生平滑的权值<br>下面是对损失函数中的正则化项的求梯度运算<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909225174622.gif" alt=""><br>可以看到 L1 求导 得到两个分立的值 而 L2 求导 得到一个连续值wi<br>几何图示<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909226985855.png" alt=""></p>
+<h3 id="p次k折交叉验证"><a href="#p次k折交叉验证" class="headerlink" title="p次k折交叉验证"></a>p次k折交叉验证</h3><p>在实际情况下，人们不是很喜欢用交叉验证，主要是因为它会耗费较多的计算资源。一般直接把训练集按照50%-90%的比例分成训练集和验证集。</p>
+<p>当超参数数量多，就需要考虑交叉验证。将数据集D划分为k个大小相似的互斥子集。轮流选取每个子集当作测试集，剩下k-1个子集当作训练集。 这样就可以获得K组训练集／测试集， 可以做K次训练／测试。 最终返回K次训练的平均值。 通常称为“K折交叉验证”</p>
+<p>K折交叉验证通常随机使用p次不同的划分方式，称为“p次K折交叉验证“。 最终也就是有pk组训练集／测试集<img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909231908260.jpg" alt=""></p>
+<h3 id="偏差和权重的合并技巧"><a href="#偏差和权重的合并技巧" class="headerlink" title="偏差和权重的合并技巧"></a>偏差和权重的合并技巧</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909238828420.jpg" alt=""><br>一般常用的方法是把两个参数放到同一个矩阵中，同时x_i向量就要增加一个维度，这个维度的数值是常量1，这就是默认的偏差维度。这样新的公式就简化成下面这样：<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909239038365.jpg" alt=""></p>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909240306532.jpg" alt=""></p>
+<h3 id="多类支持向量机损失-Multiclass-Support-Vector-Machine-Loss"><a href="#多类支持向量机损失-Multiclass-Support-Vector-Machine-Loss" class="headerlink" title="多类支持向量机损失 Multiclass Support Vector Machine Loss"></a>多类支持向量机损失 Multiclass Support Vector Machine Loss</h3><p>针对第i个数据的多类SVM的损失函数定义如下：<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909241921541.jpg" alt=""><br>上面的公式是将所有不正确分类（j\not=y_i）加起来。 S是评分函数。关于0的阀值：max(0,-)函数，它常被称为折叶损失（hinge loss）</p>
+<h3 id="正则化（Regularization）"><a href="#正则化（Regularization）" class="headerlink" title="正则化（Regularization）"></a>正则化（Regularization）</h3><p>L2 Norm 作为正则化惩罚<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909243353534.jpg" alt=""></p>
+<h3 id="损失函数Loss"><a href="#损失函数Loss" class="headerlink" title="损失函数Loss"></a>损失函数Loss</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909244000681.jpg" alt=""><br>两部分：数据损失（data loss），即所有样例的的平均损失L_i，以及正则化损失（regularization loss）。</p>
+<h3 id="Softmax分类器"><a href="#Softmax分类器" class="headerlink" title="Softmax分类器"></a>Softmax分类器</h3><p><strong>交叉熵损失（cross-entropy loss）</strong><br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909246662614.jpg" alt=""><br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909246698634.jpg" alt=""><br>使用f_j来表示分类评分向量f中的第j个元素。和之前一样，整个数据集的损失值是数据集中所有样本数据的损失值L_i的均值与正则化损失R(W)之和。<br><strong>softmax 函数</strong><br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909246992163.jpg" alt=""><br>Softmax分类器的输出是归一化的分类概率</p>
+<p><strong>注意事项</strong><br>实际编程实现的时候，由于出现了指数项，所以数值可能非常大。除以大数值可能导致数值计算的不稳定。<br>在分式的分子和分母都乘以一个常数C，并把它变换到求和之中。<img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909250197908.jpg" alt=""></p>
+<p>C 可以自由选择。 通常设置<img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909250520365.jpg" alt=""><br>就是应该将向量f中的数值进行平移，使得最大值为0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># 将f中的值平移到最大值为0：</div><div class="line">f -= np.max(f) </div><div class="line">p = np.exp(f) / np.sum(np.exp(f))</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;CS231n-中的概念-公式-Tricks-总结–线性分类器（一）&quot;&gt;&lt;a href=&quot;#CS231n-中的概念-公式-Tricks-总结–线性分类器（一）&quot; class=&quot;headerlink&quot; title=&quot;CS231n 中的概念 公式 Tricks 总结–线性分类器（一）&quot;&gt;&lt;/a&gt;CS231n 中的概念 公式 Tricks 总结–线性分类器（一）&lt;/h1&gt;&lt;h3 id=&quot;L1距离-L2距离&quot;&gt;&lt;a href=&quot;#L1距离-L2距离&quot; class=&quot;headerlink&quot; title=&quot;L1距离 L2距离&quot;&gt;&lt;/a&gt;L1距离 L2距离&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909221409973.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909220524528.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;distances = np.sqrt(np.sum(np.square(self.Xtr - X[i,:]), axis = 1))&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+      <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Softmax Regression 实现识别手写数字</title>
+    <link href="https://www.liuyuan.live/Articles/Softmax.html"/>
+    <id>https://www.liuyuan.live/Articles/Softmax.html</id>
+    <published>2017-03-21T06:06:51.000Z</published>
+    <updated>2017-03-21T06:12:39.000Z</updated>
+    
+    <content type="html"><![CDATA[<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mnist = input_data.read_data_sets(<span class="string">"MNIST_data/"</span>, one_hot = <span class="keyword">True</span>)</div></pre></td></tr></table></figure>
+<pre><code>Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+</code></pre><h5 id="这里导入MNIST是从网上下载-如果报错-可能是网络问题-可以去极客学院的页面直接下载-然后放到-MNIST-data文件夹"><a href="#这里导入MNIST是从网上下载-如果报错-可能是网络问题-可以去极客学院的页面直接下载-然后放到-MNIST-data文件夹" class="headerlink" title="这里导入MNIST是从网上下载 如果报错 可能是网络问题 可以去极客学院的页面直接下载 然后放到 MNIST_data文件夹"></a>这里导入MNIST是从网上下载 如果报错 可能是网络问题 可以去极客学院的页面直接下载 然后放到 MNIST_data文件夹</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(mnist.train.images.shape, mnist.train.labels.shape)</div></pre></td></tr></table></figure>
+<pre><code>(55000, 784) (55000, 10)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(mnist.test.images.shape, mnist.test.labels.shape)</div></pre></td></tr></table></figure>
+<pre><code>(10000, 784) (10000, 10)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(mnist.validation.images.shape, mnist.validation.labels.shape)</div></pre></td></tr></table></figure>
+<pre><code>(5000, 784) (5000, 10)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">sess = tf.InteractiveSession()</div><div class="line">x = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">784</span>]) </div><div class="line">W = tf.Variable(tf.zeros([<span class="number">784</span>, <span class="number">10</span>]))</div><div class="line">b = tf.Variable(tf.zeros([<span class="number">10</span>]))</div><div class="line"></div><div class="line">y = tf.nn.softmax(tf.matmul(x, W) + b)</div><div class="line"></div><div class="line"><span class="comment">#计算交叉熵</span></div><div class="line">y_ = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">10</span>])</div><div class="line">cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[<span class="number">1</span>]))</div><div class="line">train_step = tf.train.GradientDescentOptimizer(<span class="number">0.5</span>).minimize(cross_entropy)</div><div class="line"></div><div class="line">tf.global_variables_initializer().run()</div><div class="line"></div><div class="line"><span class="comment">#随机梯度下降 随机抽取一部分样本</span></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1000</span>):</div><div class="line">    batch_xs, batch_ys = mnist.train.next_batch(<span class="number">100</span>) </div><div class="line">    train_step.run(&#123;x: batch_xs, y_: batch_ys&#125;)</div><div class="line">    </div><div class="line">correct_prediction = tf.equal(tf.argmax(y, <span class="number">1</span>), tf.argmax(y_, <span class="number">1</span>))</div><div class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</div><div class="line">print(accuracy.eval(&#123;x: mnist.test.images,  y_: mnist.test.labels&#125;))</div></pre></td></tr></table></figure>
+<pre><code>0.9165
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; tensorflow.examples.tutorials.mnist &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; input_data&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;mnist = input_data.read_data_sets(&lt;span class=&quot;string&quot;&gt;&quot;MNIST_data/&quot;&lt;/span&gt;, one_hot = &lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;pre&gt;&lt;code&gt;Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+&lt;/code&gt;&lt;/pre&gt;&lt;h5 id=&quot;这里导入MNIST是从网上下载-如果报错-可能是网络问题-可以去极客学院的页面直接下载-然后放到-MNIST-data文件夹&quot;&gt;&lt;a href=&quot;#这里导入MNIST是从网上下载-如果报错-可能是网络问题-可以去极客学院的页面直接下载-然后放到-MNIST-data文件夹&quot; class=&quot;headerlink&quot; title=&quot;这里导入MNIST是从网上下载 如果报错 可能是网络问题 可以去极客学院的页面直接下载 然后放到 MNIST_data文件夹&quot;&gt;&lt;/a&gt;这里导入MNIST是从网上下载 如果报错 可能是网络问题 可以去极客学院的页面直接下载 然后放到 MNIST_data文件夹&lt;/h5&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;print(mnist.train.images.shape, mnist.train.labels.shape)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在Tensorflow 中实现 多层感知器MLP</title>
+    <link href="https://www.liuyuan.live/Articles/MLP.html"/>
+    <id>https://www.liuyuan.live/Articles/MLP.html</id>
+    <published>2017-03-21T06:06:29.000Z</published>
+    <updated>2017-03-21T06:13:45.000Z</updated>
+    
+    <content type="html"><![CDATA[<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mnist = input_data.read_data_sets(<span class="string">"MNIST_data/"</span>, one_hot=<span class="keyword">True</span>)</div><div class="line">sess = tf.InteractiveSession()</div></pre></td></tr></table></figure>
+<pre><code>Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 参数设置</span></div><div class="line">in_units = <span class="number">784</span></div><div class="line">h1_units = <span class="number">300</span></div><div class="line">W1 = tf.Variable(tf.truncated_normal([in_units,h1_units],stddev=<span class="number">0.01</span>))  </div><div class="line">b1 = tf.Variable(tf.zeros([h1_units]))  </div><div class="line"><span class="comment"># W2 b2 是输出层的权重及偏置项  </span></div><div class="line">W2 = tf.Variable(tf.zeros([h1_units,<span class="number">10</span>]))  </div><div class="line">b2 = tf.Variable(tf.zeros([<span class="number">10</span>]))</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x = tf.placeholder(tf.float32,[<span class="keyword">None</span>, in_units])</div><div class="line">keep_prob = tf.placeholder(tf.float32)   <span class="comment"># dropout 的比率</span></div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义模型结构</span></div><div class="line">hidden1 = tf.nn.relu(tf.matmul(x, W1) + b1)</div><div class="line">hidden1_drop = tf.nn.dropout(hidden1, keep_prob)</div><div class="line">y = tf.nn.softmax(tf.matmul(hidden1_drop, W2) + b2)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义损失函数和选择优化器</span></div><div class="line">y_ = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">10</span>])</div><div class="line">cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[<span class="number">1</span>]))</div><div class="line">train_step = tf.train.AdagradOptimizer(<span class="number">0.3</span>).minimize(cross_entropy)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Step3: 训练,一般来说,越复杂越大规模的神经网络,Dropout的效率越显著。  </span></div><div class="line">tf.global_variables_initializer().run()  </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">3000</span>):  </div><div class="line">    batch_xs,batch_ys = mnist.train.next_batch(<span class="number">100</span>) <span class="comment">#一共30W样本  </span></div><div class="line">    train_step.run(&#123;x: batch_xs, y_: batch_ys, keep_prob: <span class="number">0.75</span>&#125;) <span class="comment"># 保留75%的节点,其余都置为0  </span></div><div class="line">  </div><div class="line">  </div><div class="line"><span class="comment"># Step4: 评估  </span></div><div class="line">correct_prediction = tf.equal(tf.argmax(y,<span class="number">1</span>),tf.argmax(y_,<span class="number">1</span>)) <span class="comment"># 预测相等的样本数  </span></div><div class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32)) <span class="comment"># 准确率  </span></div><div class="line">print(accuracy.eval(&#123;x: mnist.test.images, y_: mnist.test.labels,  </div><div class="line">                     keep_prob: <span class="number">1.0</span>&#125;))</div></pre></td></tr></table></figure>
+<pre><code>0.9769
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; tensorflow.examples.tutorials.mnist &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; input_data&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; tensorflow &lt;span class=&quot;keyword&quot;&gt;as&lt;/span&gt; tf&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;mnist = input_data.read_data_sets(&lt;span class=&quot;string&quot;&gt;&quot;MNIST_data/&quot;&lt;/span&gt;, one_hot=&lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;sess = tf.InteractiveSession()&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;pre&gt;&lt;code&gt;Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+&lt;/code&gt;&lt;/pre&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 参数设置&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;in_units = &lt;span class=&quot;number&quot;&gt;784&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;h1_units = &lt;span class=&quot;number&quot;&gt;300&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;W1 = tf.Variable(tf.truncated_normal([in_units,h1_units],stddev=&lt;span class=&quot;number&quot;&gt;0.01&lt;/span&gt;))  &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;b1 = tf.Variable(tf.zeros([h1_units]))  &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# W2 b2 是输出层的权重及偏置项  &lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;W2 = tf.Variable(tf.zeros([h1_units,&lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;]))  &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;b2 = tf.Variable(tf.zeros([&lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;]))&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;x = tf.placeholder(tf.float32,[&lt;span class=&quot;keyword&quot;&gt;None&lt;/span&gt;, in_units])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;keep_prob = tf.placeholder(tf.float32)   &lt;span class=&quot;comment&quot;&gt;# dropout 的比率&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在TensorFlow中实现CNN 识别手写数字</title>
+    <link href="https://www.liuyuan.live/Articles/CNN.html"/>
+    <id>https://www.liuyuan.live/Articles/CNN.html</id>
+    <published>2017-03-21T06:06:23.000Z</published>
+    <updated>2017-07-15T18:36:49.000Z</updated>
+    
+    <content type="html"><![CDATA[<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mnist = input_data.read_data_sets(<span class="string">"MNIST_data/"</span>, one_hot=<span class="keyword">True</span>)</div><div class="line">sess = tf.InteractiveSession()</div></pre></td></tr></table></figure>
+<pre><code>Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 权重和偏置的初始化函数</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">weight_variable</span><span class="params">(shape)</span>:</span></div><div class="line">    initial = tf.truncated_normal(shape, stddev=<span class="number">0.1</span>)</div><div class="line">    <span class="keyword">return</span> tf.Variable(initial)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">bias_variable</span><span class="params">(shape)</span>:</span></div><div class="line">    initial = tf.constant(<span class="number">0.1</span>, shape = shape)</div><div class="line">    <span class="keyword">return</span> tf.Variable(initial)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 卷积层 池化层函数</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv2d</span><span class="params">(x, W)</span>:</span></div><div class="line">    <span class="keyword">return</span> tf.nn.conv2d(x, W, strides=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">'SAME'</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">max_pool_2x2</span><span class="params">(x)</span>:</span></div><div class="line">    <span class="keyword">return</span> tf.nn.max_pool(x, ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], padding=<span class="string">'SAME'</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义输入的placeholder</span></div><div class="line">x = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">784</span>])</div><div class="line">y_ = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">10</span>])</div><div class="line">x_image = tf.reshape(x, [<span class="number">-1</span>,<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>])</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义第一个卷积层</span></div><div class="line">W_conv1 = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">32</span>])  </div><div class="line">b_conv1 = bias_variable([<span class="number">32</span>])</div><div class="line">h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)</div><div class="line">h_pool1 = max_pool_2x2(h_conv1)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义第二个卷积层</span></div><div class="line">W_conv2 = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">32</span>,<span class="number">64</span>])</div><div class="line">b_conv2 = bias_variable([<span class="number">64</span>])</div><div class="line">h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)</div><div class="line">h_pool2 = max_pool_2x2(h_conv2)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义全连层</span></div><div class="line">W_fc1 = weight_variable([<span class="number">7</span> * <span class="number">7</span> * <span class="number">64</span>, <span class="number">1024</span>])</div><div class="line">b_fc1 = bias_variable([<span class="number">1024</span>])</div><div class="line">h_pool2_flat = tf.reshape(h_pool2, [<span class="number">-1</span>, <span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>])</div><div class="line">h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义dropout层以减轻过拟合</span></div><div class="line">keep_prob = tf.placeholder(tf.float32)</div><div class="line">h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Softmax 层 得到最后的概率输出</span></div><div class="line">W_fc2 = weight_variable([<span class="number">1024</span>, <span class="number">10</span>])</div><div class="line">b_fc2 = bias_variable([<span class="number">10</span>])</div><div class="line">y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 定义损失函数 </span></div><div class="line">cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[<span class="number">1</span>]))</div><div class="line">train_step = tf.train.AdamOptimizer(<span class="number">1e-4</span>).minimize(cross_entropy)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">correct_prediction = tf.equal(tf.argmax(y_conv, <span class="number">1</span>), tf.argmax(y_, <span class="number">1</span>))</div><div class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">tf.global_variables_initializer().run()</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">20000</span>):</div><div class="line">    batch = mnist.train.next_batch(<span class="number">50</span>)</div><div class="line">    <span class="keyword">if</span> i%<span class="number">100</span> == <span class="number">0</span>:</div><div class="line">        train_accuracy = accuracy.eval(feed_dict = &#123;x:batch[<span class="number">0</span>], y_:batch[<span class="number">1</span>], keep_prob: <span class="number">1.0</span>&#125;)</div><div class="line">        print(<span class="string">"step %d, training accuracy %g"</span> % (i, train_accuracy))</div><div class="line">    train_step.run(feed_dict = &#123;x: batch[<span class="number">0</span>], y_: batch[<span class="number">1</span>], keep_prob: <span class="number">0.5</span>&#125;)</div></pre></td></tr></table></figure>
+<pre><code>step 0, training accuracy 0.12
+step 100, training accuracy 0.84
+step 200, training accuracy 0.94
+step 300, training accuracy 0.88
+step 400, training accuracy 0.96
+step 500, training accuracy 0.92
+step 600, training accuracy 1
+step 700, training accuracy 0.98
+step 800, training accuracy 0.94
+step 900, training accuracy 1
+step 1000, training accuracy 0.92
+step 1100, training accuracy 0.98
+step 1200, training accuracy 0.98
+step 1300, training accuracy 0.98
+step 1400, training accuracy 0.98
+step 1500, training accuracy 0.98
+step 1600, training accuracy 0.96
+step 1700, training accuracy 0.98
+step 1800, training accuracy 0.94
+step 1900, training accuracy 0.94
+step 2000, training accuracy 0.96
+step 2100, training accuracy 0.98
+step 2200, training accuracy 0.94
+step 2300, training accuracy 0.94
+step 2400, training accuracy 0.98
+step 2500, training accuracy 0.98
+step 2600, training accuracy 1
+step 2700, training accuracy 0.96
+step 2800, training accuracy 1
+step 2900, training accuracy 0.96
+step 3000, training accuracy 0.98
+step 3100, training accuracy 0.92
+step 3200, training accuracy 1
+step 3300, training accuracy 0.98
+step 3400, training accuracy 1
+step 3500, training accuracy 0.94
+step 3600, training accuracy 0.98
+step 3700, training accuracy 0.98
+step 3800, training accuracy 0.98
+step 3900, training accuracy 0.98
+step 4000, training accuracy 1
+step 4100, training accuracy 1
+step 4200, training accuracy 0.98
+step 4300, training accuracy 1
+step 4400, training accuracy 0.98
+step 4500, training accuracy 1
+step 4600, training accuracy 1
+step 4700, training accuracy 1
+step 4800, training accuracy 1
+step 4900, training accuracy 0.98
+step 5000, training accuracy 0.98
+step 5100, training accuracy 0.98
+step 5200, training accuracy 0.98
+step 5300, training accuracy 1
+step 5400, training accuracy 1
+step 5500, training accuracy 0.98
+step 5600, training accuracy 1
+step 5700, training accuracy 0.96
+step 5800, training accuracy 0.96
+step 5900, training accuracy 1
+step 6000, training accuracy 0.98
+step 6100, training accuracy 1
+step 6200, training accuracy 1
+step 6300, training accuracy 1
+step 6400, training accuracy 0.98
+step 6500, training accuracy 0.96
+step 6600, training accuracy 1
+step 6700, training accuracy 1
+step 6800, training accuracy 1
+step 6900, training accuracy 0.98
+step 7000, training accuracy 1
+step 7100, training accuracy 1
+step 7200, training accuracy 1
+step 7300, training accuracy 0.96
+step 7400, training accuracy 0.98
+step 7500, training accuracy 1
+step 7600, training accuracy 1
+step 7700, training accuracy 1
+step 7800, training accuracy 1
+step 7900, training accuracy 0.98
+step 8000, training accuracy 1
+step 8100, training accuracy 0.98
+step 8200, training accuracy 0.98
+step 8300, training accuracy 1
+step 8400, training accuracy 1
+step 8500, training accuracy 1
+step 8600, training accuracy 1
+step 8700, training accuracy 1
+step 8800, training accuracy 0.98
+step 8900, training accuracy 1
+step 9000, training accuracy 1
+step 9100, training accuracy 1
+step 9200, training accuracy 1
+step 9300, training accuracy 0.98
+step 9400, training accuracy 0.98
+step 9500, training accuracy 0.96
+step 9600, training accuracy 1
+step 9700, training accuracy 1
+step 9800, training accuracy 1
+step 9900, training accuracy 0.98
+step 10000, training accuracy 1
+step 10100, training accuracy 1
+step 10200, training accuracy 1
+step 10300, training accuracy 1
+step 10400, training accuracy 1
+step 10500, training accuracy 1
+step 10600, training accuracy 1
+step 10700, training accuracy 0.98
+step 10800, training accuracy 0.98
+step 10900, training accuracy 0.98
+step 11000, training accuracy 1
+step 11100, training accuracy 1
+step 11200, training accuracy 1
+step 11300, training accuracy 1
+step 11400, training accuracy 1
+step 11500, training accuracy 1
+step 11600, training accuracy 1
+step 11700, training accuracy 1
+step 11800, training accuracy 1
+step 11900, training accuracy 1
+step 12000, training accuracy 1
+step 12100, training accuracy 0.98
+step 12200, training accuracy 1
+step 12300, training accuracy 0.98
+step 12400, training accuracy 1
+step 12500, training accuracy 1
+step 12600, training accuracy 1
+step 12700, training accuracy 1
+step 12800, training accuracy 1
+step 12900, training accuracy 1
+step 13000, training accuracy 1
+step 13100, training accuracy 1
+step 13200, training accuracy 1
+step 13300, training accuracy 1
+step 13400, training accuracy 0.98
+step 13500, training accuracy 0.98
+step 13600, training accuracy 1
+step 13700, training accuracy 1
+step 13800, training accuracy 1
+step 13900, training accuracy 1
+step 14000, training accuracy 1
+step 14100, training accuracy 0.98
+step 14200, training accuracy 1
+step 14300, training accuracy 1
+step 14400, training accuracy 1
+step 14500, training accuracy 1
+step 14600, training accuracy 1
+step 14700, training accuracy 1
+step 14800, training accuracy 1
+step 14900, training accuracy 1
+step 15000, training accuracy 1
+step 15100, training accuracy 1
+step 15200, training accuracy 0.98
+step 15300, training accuracy 1
+step 15400, training accuracy 1
+step 15500, training accuracy 1
+step 15600, training accuracy 1
+step 15700, training accuracy 1
+step 15800, training accuracy 1
+step 15900, training accuracy 0.98
+step 16000, training accuracy 1
+step 16100, training accuracy 1
+step 16200, training accuracy 1
+step 16300, training accuracy 1
+step 16400, training accuracy 1
+step 16500, training accuracy 1
+step 16600, training accuracy 1
+step 16700, training accuracy 1
+step 16800, training accuracy 1
+step 16900, training accuracy 1
+step 17000, training accuracy 1
+step 17100, training accuracy 1
+step 17200, training accuracy 1
+step 17300, training accuracy 1
+step 17400, training accuracy 1
+step 17500, training accuracy 1
+step 17600, training accuracy 1
+step 17700, training accuracy 1
+step 17800, training accuracy 1
+step 17900, training accuracy 1
+step 18000, training accuracy 1
+step 18100, training accuracy 1
+step 18200, training accuracy 1
+step 18300, training accuracy 0.98
+step 18400, training accuracy 1
+step 18500, training accuracy 1
+step 18600, training accuracy 1
+step 18700, training accuracy 1
+step 18800, training accuracy 1
+step 18900, training accuracy 1
+step 19000, training accuracy 1
+step 19100, training accuracy 1
+step 19200, training accuracy 1
+step 19300, training accuracy 1
+step 19400, training accuracy 1
+step 19500, training accuracy 1
+step 19600, training accuracy 1
+step 19700, training accuracy 1
+step 19800, training accuracy 1
+step 19900, training accuracy 1
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(<span class="string">"test accuracy %g"</span> % accuracy.eval(feed_dict = &#123;x: mnist.test.images, y_: mnist.test.labels, keep_prob: <span class="number">1.0</span>&#125;))</div></pre></td></tr></table></figure>
+<pre><code>test accuracy 0.9916
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; tensorflow.examples.tutorials.mnist &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; input_data&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; tensorflow &lt;span class=&quot;keyword&quot;&gt;as&lt;/span&gt; tf&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;mnist = input_data.read_data_sets(&lt;span class=&quot;string&quot;&gt;&quot;MNIST_data/&quot;&lt;/span&gt;, one_hot=&lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;sess = tf.InteractiveSession()&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;pre&gt;&lt;code&gt;Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+&lt;/code&gt;&lt;/pre&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 权重和偏置的初始化函数&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;weight_variable&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(shape)&lt;/span&gt;:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    initial = tf.truncated_normal(shape, stddev=&lt;span class=&quot;number&quot;&gt;0.1&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; tf.Variable(initial)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;bias_variable&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(shape)&lt;/span&gt;:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    initial = tf.constant(&lt;span class=&quot;number&quot;&gt;0.1&lt;/span&gt;, shape = shape)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; tf.Variable(initial)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 卷积层 池化层函数&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;conv2d&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(x, W)&lt;/span&gt;:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; tf.nn.conv2d(x, W, strides=[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;], padding=&lt;span class=&quot;string&quot;&gt;&#39;SAME&#39;&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;max_pool_2x2&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(x)&lt;/span&gt;:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; tf.nn.max_pool(x, ksize=[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;], strides=[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;], padding=&lt;span class=&quot;string&quot;&gt;&#39;SAME&#39;&lt;/span&gt;)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>随机梯度上升算法Python实现和使用Logistics Regression 分类</title>
+    <link href="https://www.liuyuan.live/Articles/SGD.html"/>
+    <id>https://www.liuyuan.live/Articles/SGD.html</id>
+    <published>2017-03-21T06:06:16.000Z</published>
+    <updated>2017-03-21T06:27:56.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="随机梯度上升算法Python实现和使用Logistics-Regression-分类"><a href="#随机梯度上升算法Python实现和使用Logistics-Regression-分类" class="headerlink" title="随机梯度上升算法Python实现和使用Logistics Regression 分类"></a>随机梯度上升算法Python实现和使用Logistics Regression 分类</h1><p>随机梯度上升 是指 从不同的W初始值执行进行梯度运算来更新W的值，求得函数最大值，从而使得真实标签与预测标签之间差异最小。<br><img src="http://okn3yh48r.bkt.clouddn.com/images/SGD_gradientascend.png" alt="gradientascend"><br>将 alpha 前的正号改为符号 即为梯度下降 可以用来求函数的最小值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">def stocGradAscent1(dataMatrix, classLabels, numIter = 150):</div><div class="line">    #随机梯度上升</div><div class="line">    m, n = shape(dataMatrix)</div><div class="line">    alpha = 0.01</div><div class="line">    #步长</div><div class="line">    weights = ones(n)</div><div class="line">    for j in range(numIter):</div><div class="line">        dataIndex = range(m)</div><div class="line">        for i in range(m):</div><div class="line">            alpha = 4/(1.0+j+i)+0.01</div><div class="line">            # alpha 每次减少 1/（j+i） </div><div class="line">            randIndex = int(random.uniform(0, len(dataIndex)))</div><div class="line">            h = sigmoid(sum(dataMatrix[randIndex] * weights))</div><div class="line">            error = classLabels[randIndex] - h </div><div class="line">            weights = weights + alpha * error * dataMatrix[randIndex]</div><div class="line">            del(dataIndex[randIndex])</div><div class="line">    </div><div class="line">    return weights</div></pre></td></tr></table></figure>
+<p>效果：<br><img src="http://okn3yh48r.bkt.clouddn.com/images/SGD_result.png" alt="result"></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;随机梯度上升算法Python实现和使用Logistics-Regression-分类&quot;&gt;&lt;a href=&quot;#随机梯度上升算法Python实现和使用Logistics-Regression-分类&quot; class=&quot;headerlink&quot; title=&quot;随机梯度上升算法Python实现和使用Logistics Regression 分类&quot;&gt;&lt;/a&gt;随机梯度上升算法Python实现和使用Logistics Regression 分类&lt;/h1&gt;&lt;p&gt;随机梯度上升 是指 从不同的W初始值执行进行梯度运算来更新W的值，求得函数最大值，从而使得真实标签与预测标签之间差异最小。&lt;br&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/images/SGD_gradientascend.png&quot; alt=&quot;gradientascend&quot;&gt;&lt;br&gt;将 alpha 前的正号改为符号 即为梯度下降 可以用来求函数的最小值&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;def stocGradAscent1(dataMatrix, classLabels, numIter = 150):&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    #随机梯度上升&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    m, n = shape(dataMatrix)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    alpha = 0.01&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    #步长&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    weights = ones(n)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    for j in range(numIter):&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        dataIndex = range(m)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        for i in range(m):&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            alpha = 4/(1.0+j+i)+0.01&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            # alpha 每次减少 1/（j+i） &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            randIndex = int(random.uniform(0, len(dataIndex)))&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            h = sigmoid(sum(dataMatrix[randIndex] * weights))&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            error = classLabels[randIndex] - h &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            weights = weights + alpha * error * dataMatrix[randIndex]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            del(dataIndex[randIndex])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    return weights&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;效果：&lt;br&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/images/SGD_result.png&quot; alt=&quot;result&quot;&gt;&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>KNN算法的Python实现和用KNN识别手写数字</title>
+    <link href="https://www.liuyuan.live/Articles/KNN.html"/>
+    <id>https://www.liuyuan.live/Articles/KNN.html</id>
+    <published>2017-03-21T06:06:03.000Z</published>
+    <updated>2017-03-21T06:27:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>KNN算法伪代码：<br>1 计算测试样本与所有数据样本之间的距离<br>2 距离排序<br>3 选取与测试样本距离最小的数据样本K个数据样本<br>4 将K个数据点的标签进行统计并排序<br>5 返回K个数据点中的标签中频率最高的一个标签作为当前测试样本的标签</p>
+<p>KNN优点：简单有效精度高<br>KNN缺点: 空间和时间复杂度高 每一次预测 都需要对全部数据进行计算 耗时长 并且 无法给出数据的基础结构信息</p>
+<p>一个满足实际需求的模型 应该是测试的时间远远短与训练的时间</p>
+<p>####KNN算法的Python实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">def classify0(inX, dataSet, labels, k):</div><div class="line">    </div><div class="line">    dataSetSize = dataSet.shape[0]</div><div class="line">    </div><div class="line">    # numpy中 shape[0] 读取行数  shape[1]读取列数</div><div class="line">    diffMat = tile(inX, (dataSetSize, 1)) - dataSet</div><div class="line">    # 这里 tile(A,reps)  函数 表示 将 inA 按照 第一维度复制 dataSetSize 次 </div><div class="line">    # 第二维度 复制1次 得到一个 数组 即得到和数据集对应的全零数组 </div><div class="line">    # 然后对位计算和数据集的差值  </div><div class="line">    # 对于单个点 就是 [x-x0,y-y0]</div><div class="line">    sqDiffMat = diffMat ** 2</div><div class="line">    sqDistance = sqDiffMat.sum(axis=1)</div><div class="line">    # 按照第二维度 即横向 来计算和  也就是 (x-x0)^2 + (y-y0)^2 </div><div class="line">    distances = sqDistance ** 0.5</div><div class="line">    # 开根号得到 欧式距离 即 Euclidean Norm  或者 L2 Norm</div><div class="line"></div><div class="line">    sortedDistIndicies = distances.argsort()</div><div class="line">    # 对距离进行排序 argsort()将distances从小到大排序 返回索引</div><div class="line">    classCount=&#123;&#125;</div><div class="line">    # 新建类别字典 </div><div class="line">    for i in range(k):</div><div class="line">        voteIlable = labels[sortedDistIndicies[i]]</div><div class="line">        # 提取K个最近的距离的数据点的索引</div><div class="line">        classCount[voteIlable] = classCount.get(voteIlable, 0) + 1</div><div class="line">        # Dict.get(key, default = None)  这个方法按key索值 如果没有则返回默认值 </div><div class="line">        # 这里查询到了则+1 没有查询到 则 将新建一个键值对 key = voteIlable 值为 0 + 1</div><div class="line">    sortedClassCount = sorted(classCount.iteritems(), key = operator.itemgetter(1), reverse=True)</div><div class="line">    # Dict.iteritems() 返回一个迭代器对象 </div><div class="line">    # operator.itemgetter(1) 定义了一个函数 作用到迭代器上 获取对象第一个域的值</div><div class="line">    # sorted（排序对象 一个list或者iterator对象，key 排序的根据，顺序 默认flase(升序排列) true则是降序排列</div><div class="line">    # 这里是按照 最邻近的K个数据点 的分类 出现的频率排列</div><div class="line">    return sortedClassCount[0][0]</div><div class="line">    # 判断K个里面出现最多次数的分类 作为当前点的分类</div></pre></td></tr></table></figure></p>
+<h4 id="用KNN识别手写数字"><a href="#用KNN识别手写数字" class="headerlink" title="用KNN识别手写数字"></a>用KNN识别手写数字</h4><p>数据是01组成的字符串矩阵：<br><img src="http://okn3yh48r.bkt.clouddn.com/images/KNN_result.png" alt="nu"></p>
+<p>数据处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">def img2vector(filename):</div><div class="line">    returnVect = zeros((1,1024))</div><div class="line">    fr = open(filename)</div><div class="line">    for i in range(32):</div><div class="line">        lineStr = fr.readline()</div><div class="line">        for j in range(32):</div><div class="line">            returnVect[0, 32*i + j] = int(lineStr[j])</div><div class="line">    return returnVect</div><div class="line">```  </div><div class="line"></div><div class="line">测试：</div></pre></td></tr></table></figure>
+<p>def handwritingClassTest():<br>    hwLabels = []<br>    trainingFileList = os.listdir(‘digits/trainingDigits’)</p>
+<pre><code>#获取目录
+m = len(trainingFileList)
+trainingMat = zeros((m, 1024))
+for i in range(m):
+    fileNameStr = trainingFileList[i]
+    fileStr = fileNameStr.split(&apos;.&apos;)[0]
+    classNumStr = int(fileStr.split(&apos;_&apos;)[0])
+    #获取文件名并解析出数字
+    hwLabels.append(classNumStr)
+    trainingMat[i, :] = img2vector(&apos;digits/trainingDigits/%s&apos; % fileNameStr)
+testFileList = os.listdir(&apos;digits/testDigits&apos;)
+errorCount = 0.0
+mTest = len(testFileList)
+for i in range(mTest):
+    fileNameStr = testFileList[i]
+    fileStr = fileNameStr.split(&apos;.&apos;)[0]
+    classNumStr = int(fileStr.split(&apos;_&apos;)[0])
+    vectorUnderTest = img2vector(&apos;digits/testDigits/%s&apos; % fileNameStr)
+    classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 7)
+    print &quot;the classifier came back with: %d, the real answer is : %d&quot; %(classifierResult, classNumStr)
+    if(classifierResult != classNumStr) : 
+        errorCount += 1.0
+
+print &quot;\nthe total number of errors is : %d&quot; % errorCount
+print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
+</code></pre><p>```  </p>
+<p>效果：<br><img src="http://okn3yh48r.bkt.clouddn.com/images/KNN_num4.png" alt="result"></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;KNN算法伪代码：&lt;br&gt;1 计算测试样本与所有数据样本之间的距离&lt;br&gt;2 距离排序&lt;br&gt;3 选取与测试样本距离最小的数据样本K个数据样本&lt;br&gt;4 将K个数据点的标签进行统计并排序&lt;br&gt;5 返回K个数据点中的标签中频率最高的一个标签作为当前测试样本的标签&lt;/p&gt;
+&lt;p&gt;KNN优点：简单有效精度高&lt;br&gt;KNN缺点: 空间和时间复杂度高 每一次预测 都需要对全部数据进行计算 耗时长 并且 无法给出数据的基础结构信息&lt;/p&gt;
+&lt;p&gt;一个满足实际需求的模型 应该是测试的时间远远短与训练的时间&lt;/p&gt;
+&lt;p&gt;####KNN算法的Python实现&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;33&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;def classify0(inX, dataSet, labels, k):&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    dataSetSize = dataSet.shape[0]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # numpy中 shape[0] 读取行数  shape[1]读取列数&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    diffMat = tile(inX, (dataSetSize, 1)) - dataSet&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 这里 tile(A,reps)  函数 表示 将 inA 按照 第一维度复制 dataSetSize 次 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 第二维度 复制1次 得到一个 数组 即得到和数据集对应的全零数组 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 然后对位计算和数据集的差值  &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 对于单个点 就是 [x-x0,y-y0]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    sqDiffMat = diffMat ** 2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    sqDistance = sqDiffMat.sum(axis=1)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 按照第二维度 即横向 来计算和  也就是 (x-x0)^2 + (y-y0)^2 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    distances = sqDistance ** 0.5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 开根号得到 欧式距离 即 Euclidean Norm  或者 L2 Norm&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    sortedDistIndicies = distances.argsort()&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 对距离进行排序 argsort()将distances从小到大排序 返回索引&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    classCount=&amp;#123;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 新建类别字典 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    for i in range(k):&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        voteIlable = labels[sortedDistIndicies[i]]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        # 提取K个最近的距离的数据点的索引&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        classCount[voteIlable] = classCount.get(voteIlable, 0) + 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        # Dict.get(key, default = None)  这个方法按key索值 如果没有则返回默认值 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        # 这里查询到了则+1 没有查询到 则 将新建一个键值对 key = voteIlable 值为 0 + 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    sortedClassCount = sorted(classCount.iteritems(), key = operator.itemgetter(1), reverse=True)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # Dict.iteritems() 返回一个迭代器对象 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # operator.itemgetter(1) 定义了一个函数 作用到迭代器上 获取对象第一个域的值&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # sorted（排序对象 一个list或者iterator对象，key 排序的根据，顺序 默认flase(升序排列) true则是降序排列&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 这里是按照 最邻近的K个数据点 的分类 出现的频率排列&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    return sortedClassCount[0][0]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    # 判断K个里面出现最多次数的分类 作为当前点的分类&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h4 id=&quot;用KNN识别手写数字&quot;&gt;&lt;a href=&quot;#用KNN识别手写数字&quot; class=&quot;headerlink&quot; title=&quot;用KNN识别手写数字&quot;&gt;&lt;/a&gt;用KNN识别手写数字&lt;/h4&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Machine Learning Assignments</title>
+    <link href="https://www.liuyuan.live/Articles/test01.html"/>
+    <id>https://www.liuyuan.live/Articles/test01.html</id>
+    <published>2017-02-12T13:03:04.000Z</published>
+    <updated>2017-02-12T15:10:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Machine-Learning-Foundations-A-Case-Study-Approach"><a href="#Machine-Learning-Foundations-A-Case-Study-Approach" class="headerlink" title="Machine Learning Foundations: A Case Study Approach"></a>Machine Learning Foundations: A Case Study Approach</h3><p>这门课深入浅出地介绍了机器学习方法的各种典型案例和概念<br>下面是我完成的这门基础课程的一些课程作业和总结的概念集合  </p>
+<h4 id="Regression："><a href="#Regression：" class="headerlink" title="Regression："></a>Regression：</h4><ul>
+<li>Linear Regression</li>
+<li>Overfitting</li>
+<li>Training/Test Curves</li>
+<li>Mulitiple Linear Regression</li>
+</ul>
+<p><a href="ML_Assignments/Assignment__Predicting house prices.html" target="_blank">运用回归算法进行房价预测</a></p>
+<h4 id="Classification"><a href="#Classification" class="headerlink" title="Classification:"></a>Classification:</h4><ul>
+<li>Classifier Model</li>
+<li>Linear Classifier Model</li>
+<li>RSS: Residual sum of squares</li>
+<li>Decision Boundaries</li>
+<li>Classification error &amp; accuracy</li>
+<li>Confusion matrix(binary classification &amp; multiclass classification)</li>
+<li>Learning curves (Relationship between the amount of training data and the test error)</li>
+<li>Bias of model</li>
+</ul>
+<p><a href="ML_Assignments/Assignment__ Analyzing products sentiment.html" target="_blank">产品评论情感分析</a></p>
+<h4 id="Clustering-and-Similarity"><a href="#Clustering-and-Similarity" class="headerlink" title="Clustering and Similarity"></a>Clustering and Similarity</h4><ul>
+<li>Bag of words model</li>
+<li>Local frequency &amp; global rarity</li>
+<li>TF-IDF document representation (Term frequency – inverse document frequency)</li>
+<li>1-Nearest neighbor &amp; K-Nearest neighbor</li>
+<li>Clustering</li>
+<li>K-means algorithm</li>
+</ul>
+<p><a href="ML_Assignments/Assignment__Retrieving_Wikipedia_articles.html" target="_blank">应用聚类进行维基文章检索</a></p>
+<h4 id="Product-recommendations"><a href="#Product-recommendations" class="headerlink" title="Product recommendations"></a>Product recommendations</h4><ul>
+<li>Simplest approach: Popularity</li>
+<li>Classification model</li>
+<li>Co-occurrence matrix</li>
+<li>Jaccard similarity</li>
+<li>matrix factorization</li>
+<li>Matrix factorization model</li>
+<li>Precision-recall curve</li>
+<li>area under the curve (AUC)</li>
+</ul>
+<p><a href="ML_Assignments/Assignment__Recommending songs.html" target="_blank">用户歌曲推荐</a></p>
+<h4 id="Deep-Learning"><a href="#Deep-Learning" class="headerlink" title="Deep Learning"></a>Deep Learning</h4><ul>
+<li>XOR: a⊕b = (¬a ∧ b) ∨ (a ∧¬b)</li>
+<li>Neural network</li>
+<li>Image features (local detectors &amp; collections of locally interesting points)</li>
+<li>RIFT</li>
+<li>Deep learning Pros and Cons</li>
+<li>Transfer learning: Use data from one task to help learn on another</li>
+</ul>
+<p><a href="ML_Assignments/Test_Deep Features for Image Classification.html" target="_blank">运用迁移学习的方法利用深度特征进行图片分类</a><br><a href="ML_Assignments/Test_Deep Features for Image Retrieval.html" target="_blank">运用迁移学习的方法利用深度特征进行图片检索</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Machine-Learning-Foundations-A-Case-Study-Approach&quot;&gt;&lt;a href=&quot;#Machine-Learning-Foundations-A-Case-Study-Approach&quot; class=&quot;headerlink&quot; title=&quot;Machine Learning Foundations: A Case Study Approach&quot;&gt;&lt;/a&gt;Machine Learning Foundations: A Case Study Approach&lt;/h3&gt;&lt;p&gt;这门课深入浅出地介绍了机器学习方法的各种典型案例和概念&lt;br&gt;下面是我完成的这门基础课程的一些课程作业和总结的概念集合  &lt;/p&gt;
+&lt;h4 id=&quot;Regression：&quot;&gt;&lt;a href=&quot;#Regression：&quot; class=&quot;headerlink&quot; title=&quot;Regression：&quot;&gt;&lt;/a&gt;Regression：&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;Linear Regression&lt;/li&gt;
+&lt;li&gt;Overfitting&lt;/li&gt;
+&lt;li&gt;Training/Test Curves&lt;/li&gt;
+&lt;li&gt;Mulitiple Linear Regression&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;ML_Assignments/Assignment__Predicting house prices.html&quot; target=&quot;_blank&quot;&gt;运用回归算法进行房价预测&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
+    
+      <category term="Python" scheme="https://www.liuyuan.live/tags/Python/"/>
+    
+      <category term="Tech" scheme="https://www.liuyuan.live/tags/Tech/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>关于</title>
+    <link href="https://www.liuyuan.live/Articles/test.html"/>
+    <id>https://www.liuyuan.live/Articles/test.html</id>
+    <published>2017-02-04T09:46:41.000Z</published>
+    <updated>2017-02-04T09:51:29.000Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="我"><a href="#我" class="headerlink" title="我"></a>我</h4><p>这是我的第一个博客 感谢你的来访</p>
+<p>刘钰安 or Yuan Liu<br>NikeName: 钰安 安安 元<br>吉他手 Programmer<br>微博 LyAn_nAyL / 微信 buan1903 / 邮箱 yuanliu699@foxmail.com /  GitHub buan1903</p>
+<h4 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h4><p>??? : “他会经常忘记代码的语法和一些API，所以他经常需要去查API甚至查语法，他觉得没有Google我几乎没法工作。这在某些人的眼里，是技术不够的表现。他记的只是一个Key，一个如何找寻答案的索引，而不是全部，人脑不是电脑，他不可能要求我能记下所有的东西。”</p>
+<p>建立这个博客目的是 整理 和 查阅 以及 自由而纯粹的中英文写作</p>
+<h4 id="什么"><a href="#什么" class="headerlink" title="什么"></a>什么</h4><p>九五年七夕生 狮子座 南昌大学 一七年 行将毕业</p>
+<p>热爱电吉他 偶像是 Pual Gilbert  Steve Vai &amp; 小林信一<br>最近爱听Children of Bodom<br>也听民谣<br>听不懂流行乐 一点也不practial</p>
+<p>大一开始组乐队 名为 the dreamer 遇到了一帮很好的队友 参加了当年的微光音乐节<br>大二组建了 逆旅乐队 参加了一些演出 过的很开心<br>大三 组建了 北城以北乐队 玩民谣  玩随便什么只要开心就好<br>今年春天 北城以北乐队即将举办毕业专场 一定来看</p>
+<p>热爱技术<br>大二开始学习网页技术 html等 还使用过ruby&amp;ruby on rails<br>同时开始接触Android 和早点到团队队友们 开发了一个应用</p>
+<p>现在将转向深度学习方向 想去读个PhD<br>目前正在学习Andrew Ng 的 CS229 Machine Learning</p>
+<p>厌恶家庭生活 喜欢独居 本来就颇为缺乏的决策力 倾向做更有意义的选择<br>不愿囿于昼夜 厨房与爱</p>
+<h4 id="last-大事记"><a href="#last-大事记" class="headerlink" title="last 大事记"></a>last 大事记</h4><blockquote>
+<p>2017 一月底        建立博客</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;我&quot;&gt;&lt;a href=&quot;#我&quot; class=&quot;headerlink&quot; title=&quot;我&quot;&gt;&lt;/a&gt;我&lt;/h4&gt;&lt;p&gt;这是我的第一个博客 感谢你的来访&lt;/p&gt;
+&lt;p&gt;刘钰安 or Yuan Liu&lt;br&gt;NikeName: 钰安 安安 元&lt;br&gt;吉他手 Programmer&lt;br&gt;微博 LyAn_nAyL / 微信 buan1903 / 邮箱 yuanliu699@foxmail.com /  GitHub buan1903&lt;/p&gt;
+&lt;h4 id=&quot;目的&quot;&gt;&lt;a href=&quot;#目的&quot; class=&quot;headerlink&quot; title=&quot;目的&quot;&gt;&lt;/a&gt;目的&lt;/h4&gt;&lt;p&gt;??? : “他会经常忘记代码的语法和一些API，所以他经常需要去查API甚至查语法，他觉得没有Google我几乎没法工作。这在某些人的眼里，是技术不够的表现。他记的只是一个Key，一个如何找寻答案的索引，而不是全部，人脑不是电脑，他不可能要求我能记下所有的东西。”&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Diary" scheme="https://www.liuyuan.live/tags/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>zaodiandao</title>
+    <link href="https://www.liuyuan.live/Articles/zaodiandao.html"/>
+    <id>https://www.liuyuan.live/Articles/zaodiandao.html</id>
+    <published>2017-02-04T07:53:31.000Z</published>
+    <updated>2017-07-15T12:54:04.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>This is a breakfast booking application that my teammates and I developed on 2014. We participate in the The First China Youth Innovation Entrepreneurship APP Competition and won the Excellence Prize. For more details on technology, please go to <a href="https://github.com/buan1903/zaodiandao.git" target="_blank" rel="external">github repository</a>.</p>
+<p>I am proud of my teammates.</p>
+<p>Click here for <a href="http://okn3yh48r.bkt.clouddn.com/zaodiandaozaodiandaointroduction.mp4" target="_blank" rel="external">Introduction Movie</a>.</p>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/1.jpg" alt=""></p>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/2.jpg" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;This is a breakfast booking application that my teammates and I developed on 2014. We participate in the The First China Youth Innovation Entrepreneurship APP Competition and won the Excellence Prize. For more details on technology, please go to &lt;a href=&quot;https://github.com/buan1903/zaodiandao.git&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;github repository&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I am proud of my teammates.&lt;/p&gt;
+&lt;p&gt;Click here for &lt;a href=&quot;http://okn3yh48r.bkt.clouddn.com/zaodiandaozaodiandaointroduction.mp4&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Introduction Movie&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/1.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/2.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Java" scheme="https://www.liuyuan.live/tags/Java/"/>
+    
+      <category term="Android" scheme="https://www.liuyuan.live/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>My Jackson Kelly Guitar</title>
+    <link href="https://www.liuyuan.live/Articles/post-myguitar.html"/>
+    <id>https://www.liuyuan.live/Articles/post-myguitar.html</id>
+    <published>2017-01-31T10:28:21.000Z</published>
+    <updated>2017-02-02T15:12:38.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>This is my Jackson Kelly Guitar<br><img src="http://okn3yh48r.bkt.clouddn.com/images/myguitar.jpg" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;This is my Jackson Kelly Guitar&lt;br&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/images/myguitar.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Diary" scheme="https://www.liuyuan.live/tags/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://www.liuyuan.live/Articles/hello-world%202.html"/>
+    <id>https://www.liuyuan.live/Articles/hello-world 2.html</id>
+    <published>2017-01-30T07:34:42.000Z</published>
+    <updated>2017-03-21T06:17:12.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;documentation&lt;/a&gt; for more info. If you get any problems when using Hexo, you can find the answer in &lt;a href=&quot;https://hexo.io/docs/troubleshooting.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;troubleshooting&lt;/a&gt; or you can ask me on &lt;a href=&quot;https://github.com/hexojs/hexo/issues&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;Quick-Start&quot;&gt;&lt;a href=&quot;#Quick-Start&quot; class=&quot;headerlink&quot; title=&quot;Quick Start&quot;&gt;&lt;/a&gt;Quick Start&lt;/h2&gt;&lt;h3 id=&quot;Create-a-new-post&quot;&gt;&lt;a href=&quot;#Create-a-new-post&quot; class=&quot;headerlink&quot; title=&quot;Create a new post&quot;&gt;&lt;/a&gt;Create a new post&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;$ hexo new &lt;span class=&quot;string&quot;&gt;&quot;My New Post&quot;&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;More info: &lt;a href=&quot;https://hexo.io/docs/writing.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Writing&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
+    
+      <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
+    
+      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
+    
+      <category term="Diary" scheme="https://www.liuyuan.live/tags/Diary/"/>
+    
+      <category term="Java" scheme="https://www.liuyuan.live/tags/Java/"/>
+    
+      <category term="Python" scheme="https://www.liuyuan.live/tags/Python/"/>
+    
+      <category term="Android" scheme="https://www.liuyuan.live/tags/Android/"/>
+    
+      <category term="Computer Vision" scheme="https://www.liuyuan.live/tags/Computer-Vision/"/>
+    
+      <category term="NLP" scheme="https://www.liuyuan.live/tags/NLP/"/>
+    
+      <category term="Web" scheme="https://www.liuyuan.live/tags/Web/"/>
+    
+      <category term="Tech" scheme="https://www.liuyuan.live/tags/Tech/"/>
+    
+      <category term="Hexo" scheme="https://www.liuyuan.live/tags/Hexo/"/>
+    
+      <category term="Github" scheme="https://www.liuyuan.live/tags/Github/"/>
+    
+      <category term="Git" scheme="https://www.liuyuan.live/tags/Git/"/>
+    
+      <category term="Music" scheme="https://www.liuyuan.live/tags/Music/"/>
+    
+      <category term="Guitar" scheme="https://www.liuyuan.live/tags/Guitar/"/>
+    
+      <category term="Undefined" scheme="https://www.liuyuan.live/tags/Undefined/"/>
+    
+  </entry>
+  
+</feed>
