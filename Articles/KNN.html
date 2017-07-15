@@ -41,7 +41,9 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+    
+  
+  <link href="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" type="text/css" />
 
 
 
@@ -49,7 +51,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+  
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
@@ -346,6 +350,28 @@
           
 		  
 		  
+		  <span class="post-time">
+		  	   &nbsp; | &nbsp;
+		             <span class="post-meta-item-icon">
+		               <i class="fa fa-calendar-o"></i>
+		             </span>
+		             <span class="post-meta-item-text">字数统计:</span>
+		             <span class="post-count">794(字)</span>
+           
+		           </span>
+	  
+		        <span class="post-time">
+		  	   &nbsp; | &nbsp;
+		             <span class="post-meta-item-icon">
+		               <i class="fa fa-calendar-o"></i>
+		             </span>
+		             <span class="post-meta-item-text">阅读时长:</span>
+		             <span class="post-count">3(分)</span>
+           
+		           </span>
+		  
+		  
+		  
           
           
              <span id="/Articles/KNN.html" class="leancloud_visitors" data-flag-title="KNN算法的Python实现和用KNN识别手写数字">
@@ -353,7 +379,7 @@
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
-               <span class="post-meta-item-text">热度 </span>
+               <span class="post-meta-item-text">热度: </span>
                <span class="leancloud-visitors-count"></span>
 			   <span> °C
               </span>
@@ -372,7 +398,7 @@
       
 
       
-        <p>KNN算法伪代码：<br>1 计算测试样本与所有数据样本之间的距离<br>2 距离排序<br>3 选取与测试样本距离最小的数据样本K个数据样本<br>4 将K个数据点的标签进行统计并排序<br>5 返回K个数据点中的标签中频率最高的一个标签作为当前测试样本的标签</p>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>KNN算法伪代码：<br>1 计算测试样本与所有数据样本之间的距离<br>2 距离排序<br>3 选取与测试样本距离最小的数据样本K个数据样本<br>4 将K个数据点的标签进行统计并排序<br>5 返回K个数据点中的标签中频率最高的一个标签作为当前测试样本的标签</p>
 <p>KNN优点：简单有效精度高<br>KNN缺点: 空间和时间复杂度高 每一次预测 都需要对全部数据进行计算 耗时长 并且 无法给出数据的基础结构信息</p>
 <p>一个满足实际需求的模型 应该是测试的时间远远短与训练的时间</p>
 <p>####KNN算法的Python实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">def classify0(inX, dataSet, labels, k):</div><div class="line">    </div><div class="line">    dataSetSize = dataSet.shape[0]</div><div class="line">    </div><div class="line">    # numpy中 shape[0] 读取行数  shape[1]读取列数</div><div class="line">    diffMat = tile(inX, (dataSetSize, 1)) - dataSet</div><div class="line">    # 这里 tile(A,reps)  函数 表示 将 inA 按照 第一维度复制 dataSetSize 次 </div><div class="line">    # 第二维度 复制1次 得到一个 数组 即得到和数据集对应的全零数组 </div><div class="line">    # 然后对位计算和数据集的差值  </div><div class="line">    # 对于单个点 就是 [x-x0,y-y0]</div><div class="line">    sqDiffMat = diffMat ** 2</div><div class="line">    sqDistance = sqDiffMat.sum(axis=1)</div><div class="line">    # 按照第二维度 即横向 来计算和  也就是 (x-x0)^2 + (y-y0)^2 </div><div class="line">    distances = sqDistance ** 0.5</div><div class="line">    # 开根号得到 欧式距离 即 Euclidean Norm  或者 L2 Norm</div><div class="line"></div><div class="line">    sortedDistIndicies = distances.argsort()</div><div class="line">    # 对距离进行排序 argsort()将distances从小到大排序 返回索引</div><div class="line">    classCount=&#123;&#125;</div><div class="line">    # 新建类别字典 </div><div class="line">    for i in range(k):</div><div class="line">        voteIlable = labels[sortedDistIndicies[i]]</div><div class="line">        # 提取K个最近的距离的数据点的索引</div><div class="line">        classCount[voteIlable] = classCount.get(voteIlable, 0) + 1</div><div class="line">        # Dict.get(key, default = None)  这个方法按key索值 如果没有则返回默认值 </div><div class="line">        # 这里查询到了则+1 没有查询到 则 将新建一个键值对 key = voteIlable 值为 0 + 1</div><div class="line">    sortedClassCount = sorted(classCount.iteritems(), key = operator.itemgetter(1), reverse=True)</div><div class="line">    # Dict.iteritems() 返回一个迭代器对象 </div><div class="line">    # operator.itemgetter(1) 定义了一个函数 作用到迭代器上 获取对象第一个域的值</div><div class="line">    # sorted（排序对象 一个list或者iterator对象，key 排序的根据，顺序 默认flase(升序排列) true则是降序排列</div><div class="line">    # 这里是按照 最邻近的K个数据点 的分类 出现的频率排列</div><div class="line">    return sortedClassCount[0][0]</div><div class="line">    # 判断K个里面出现最多次数的分类 作为当前点的分类</div></pre></td></tr></table></figure></p>
@@ -411,7 +437,7 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
         谢谢观赏~
       
     </div>
-
+	
 	
 	<div>
 	      
@@ -451,6 +477,8 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
       
     </div>
 
+	
+	
     <footer class="post-footer">
       
         <div class="post-tags">
@@ -959,22 +987,22 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
 
 
   
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
 
   
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fastclick/1.0.6/fastclick.min.js"></script>
 
   
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
 
   
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
 
   
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>
 
   
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
 
   
   <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
