@@ -3,6 +3,7 @@
 
 
     
+    
   <url>
     <loc>https://www.liuyuan.live/Articles/test.html</loc>
     <lastmod>2017-07-16T13:49:47.000Z</lastmod>
@@ -22,7 +23,6 @@
     </data>
     </url>
 
-    
     
     
     
@@ -206,9 +206,9 @@
         
         <tag>Deep Learning</tag>
          
-        <tag>Machine Learning</tag>
-         
         <tag>TensorFlow</tag>
+         
+        <tag>Machine Learning</tag>
          
         <tag>Diary</tag>
          

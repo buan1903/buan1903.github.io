@@ -816,9 +816,9 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
     
       <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
     
-      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
-    
       <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
+    
+      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
     
       <category term="Diary" scheme="https://www.liuyuan.live/tags/Diary/"/>
     
