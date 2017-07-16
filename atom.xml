@@ -696,7 +696,7 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
     <link href="https://www.liuyuan.live/Articles/test.html"/>
     <id>https://www.liuyuan.live/Articles/test.html</id>
     <published>2017-02-04T09:46:41.000Z</published>
-    <updated>2017-02-04T09:51:29.000Z</updated>
+    <updated>2017-07-16T13:49:47.000Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="我"><a href="#我" class="headerlink" title="我"></a>我</h4><p>这是我的第一个博客 感谢你的来访</p>
 <p>刘钰安 or Yuan Liu<br>NikeName: 钰安 安安 元<br>吉他手 Programmer<br>微博 LyAn_nAyL / 微信 buan1903 / 邮箱 yuanliu699@foxmail.com /  GitHub buan1903</p>
@@ -816,9 +816,9 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
     
       <category term="Deep Learning" scheme="https://www.liuyuan.live/tags/Deep-Learning/"/>
     
-      <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
-    
       <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
+    
+      <category term="TensorFlow" scheme="https://www.liuyuan.live/tags/TensorFlow/"/>
     
       <category term="Diary" scheme="https://www.liuyuan.live/tags/Diary/"/>
     

@@ -3,6 +3,26 @@
 
 
     
+  <url>
+    <loc>https://www.liuyuan.live/Articles/test.html</loc>
+    <lastmod>2017-07-16T13:49:47.000Z</lastmod>
+    <data>
+        <display>
+        <title>关于</title>
+        <pubTime>2017-02-04T09:46:41.000Z</pubTime>
+        
+        <tag>Diary</tag>
+         
+         
+           
+             
+              <breadCrumb title="Articles" url="https://www.liuyuan.live/categories/Articles/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
     
     
     
@@ -186,9 +206,9 @@
         
         <tag>Deep Learning</tag>
          
-        <tag>TensorFlow</tag>
-         
         <tag>Machine Learning</tag>
+         
+        <tag>TensorFlow</tag>
          
         <tag>Diary</tag>
          
@@ -281,26 +301,6 @@
         <tag>Python</tag>
          
         <tag>Tech</tag>
-         
-         
-           
-             
-              <breadCrumb title="Articles" url="https://www.liuyuan.live/categories/Articles/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://www.liuyuan.live/Articles/test.html</loc>
-    <lastmod>2017-02-04T09:51:29.000Z</lastmod>
-    <data>
-        <display>
-        <title>关于</title>
-        <pubTime>2017-02-04T09:46:41.000Z</pubTime>
-        
-        <tag>Diary</tag>
          
          
            

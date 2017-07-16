@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.liuyuan.live/Articles/test.html</loc>
+    
+    <lastmod>2017-07-16T13:49:47.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.liuyuan.live/about/index.html</loc>
     
-    <lastmod>2017-07-16T13:45:45.000Z</lastmod>
+    <lastmod>2017-07-16T13:47:16.000Z</lastmod>
     
   </url>
   
@@ -117,13 +124,6 @@
     <loc>https://www.liuyuan.live/Articles/test01.html</loc>
     
     <lastmod>2017-02-12T15:10:32.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.liuyuan.live/Articles/test.html</loc>
-    
-    <lastmod>2017-02-04T09:51:29.000Z</lastmod>
     
   </url>
   
