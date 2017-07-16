@@ -5,6 +5,7 @@
     
     
     
+    
   <url>
     <loc>https://www.liuyuan.live/Articles/zaodiandao.html</loc>
     <lastmod>2017-07-16T07:28:25.000Z</lastmod>
@@ -88,7 +89,6 @@
     </data>
     </url>
 
-    
     
     
     
@@ -188,11 +188,11 @@
          
         <tag>TensorFlow</tag>
          
-        <tag>Machine Learning</tag>
-         
         <tag>Diary</tag>
          
         <tag>Java</tag>
+         
+        <tag>Machine Learning</tag>
          
         <tag>Python</tag>
          
