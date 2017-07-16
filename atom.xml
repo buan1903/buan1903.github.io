@@ -155,7 +155,7 @@
     <link href="https://www.liuyuan.live/Articles/CS231n1.html"/>
     <id>https://www.liuyuan.live/Articles/CS231n1.html</id>
     <published>2017-03-31T03:52:26.000Z</published>
-    <updated>2017-07-15T18:44:46.000Z</updated>
+    <updated>2017-07-16T06:59:28.000Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="CS231n-中的概念-公式-Tricks-总结–线性分类器（一）"><a href="#CS231n-中的概念-公式-Tricks-总结–线性分类器（一）" class="headerlink" title="CS231n 中的概念 公式 Tricks 总结–线性分类器（一）"></a>CS231n 中的概念 公式 Tricks 总结–线性分类器（一）</h1><h3 id="L1距离-L2距离"><a href="#L1距离-L2距离" class="headerlink" title="L1距离 L2距离"></a>L1距离 L2距离</h3><p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909221409973.jpg" alt=""></p>
 <p><img src="http://okn3yh48r.bkt.clouddn.com/media/14909220072072/14909220524528.jpg" alt=""></p>
@@ -281,7 +281,7 @@ Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
     <link href="https://www.liuyuan.live/Articles/CNN.html"/>
     <id>https://www.liuyuan.live/Articles/CNN.html</id>
     <published>2017-03-21T06:06:23.000Z</published>
-    <updated>2017-07-15T18:36:49.000Z</updated>
+    <updated>2017-07-16T06:59:51.000Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mnist = input_data.read_data_sets(<span class="string">"MNIST_data/"</span>, one_hot=<span class="keyword">True</span>)</div><div class="line">sess = tf.InteractiveSession()</div></pre></td></tr></table></figure>
@@ -733,21 +733,23 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
     <link href="https://www.liuyuan.live/Articles/zaodiandao.html"/>
     <id>https://www.liuyuan.live/Articles/zaodiandao.html</id>
     <published>2017-02-04T07:53:31.000Z</published>
-    <updated>2017-07-15T22:03:01.000Z</updated>
+    <updated>2017-07-16T07:28:25.000Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>This is a breakfast booking application that my teammates and I developed on 2014. We participate in the The First China Youth Innovation Entrepreneurship APP Competition and won the Excellence Prize. For more details on technology, please go to <a href="https://github.com/buan1903/zaodiandao.git" target="_blank" rel="external">github repository</a>.</p>
-<p>I am proud of my teammates.</p>
-<p>Click here for <a href="http://okn3yh48r.bkt.clouddn.com/zaodiandaozaodiandaointroduction.mp4" target="_blank" rel="external">Introduction Movie</a>.</p>
 <p><img src="http://okn3yh48r.bkt.clouddn.com/1.jpg" alt=""></p>
 <p><img src="http://okn3yh48r.bkt.clouddn.com/2.jpg" alt=""></p>
+<p>I am proud of my teammates.</p>
+<p> <a href="http://okn3yh48r.bkt.clouddn.com/zaodiandaozaodiandaointroduction.mp4" target="_blank" rel="external">Introduction Movie</a>.</p>
+<div class="owl-media"><div class="owl-media owl-video owl-youku"><iframe src="http://player.youku.com/embed/XMjg5NTM4Nzc0NA" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen></iframe></div><br><br></div>
+
 ]]></content>
     
     <summary type="html">
     
       &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css&quot;&gt;&lt;p&gt;This is a breakfast booking application that my teammates and I developed on 2014. We participate in the The First China Youth Innovation Entrepreneurship APP Competition and won the Excellence Prize. For more details on technology, please go to &lt;a href=&quot;https://github.com/buan1903/zaodiandao.git&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;github repository&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;I am proud of my teammates.&lt;/p&gt;
-&lt;p&gt;Click here for &lt;a href=&quot;http://okn3yh48r.bkt.clouddn.com/zaodiandaozaodiandaointroduction.mp4&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Introduction Movie&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/1.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/2.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;I am proud of my teammates.&lt;/p&gt;
     
     </summary>
     

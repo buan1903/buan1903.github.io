@@ -2,9 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.liuyuan.live/about/index.html</loc>
+    
+    <lastmod>2017-07-16T08:32:43.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.liuyuan.live/readinglist/index.html</loc>
+    
+    <lastmod>2017-07-16T07:32:29.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.liuyuan.live/Articles/zaodiandao.html</loc>
     
-    <lastmod>2017-07-15T22:03:01.000Z</lastmod>
+    <lastmod>2017-07-16T07:28:25.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.liuyuan.live/Articles/CNN.html</loc>
+    
+    <lastmod>2017-07-16T06:59:51.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.liuyuan.live/Articles/CS231n1.html</loc>
+    
+    <lastmod>2017-07-16T06:59:28.000Z</lastmod>
     
   </url>
   
@@ -12,34 +40,6 @@
     <loc>https://www.liuyuan.live/Articles/post-myguitar.html</loc>
     
     <lastmod>2017-07-15T22:02:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.liuyuan.live/readinglist/index.html</loc>
-    
-    <lastmod>2017-07-15T21:53:52.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.liuyuan.live/about/index.html</loc>
-    
-    <lastmod>2017-07-15T21:22:04.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.liuyuan.live/Articles/CS231n1.html</loc>
-    
-    <lastmod>2017-07-15T18:44:46.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.liuyuan.live/Articles/CNN.html</loc>
-    
-    <lastmod>2017-07-15T18:36:49.000Z</lastmod>
     
   </url>
   
