@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.liuyuan.live/"/>
-  <updated>2017-03-31T04:10:03.000Z</updated>
+  <updated>2017-07-17T04:55:07.000Z</updated>
   <id>https://www.liuyuan.live/</id>
   
   <author>
@@ -14,6 +14,278 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>超平面中点到直线距离推导</title>
+    <link href="https://www.liuyuan.live/Articles/%E8%B6%85%E5%B9%B3%E9%9D%A2%E4%B8%AD%E7%82%B9%E5%88%B0%E7%9B%B4%E7%BA%BF%E8%B7%9D%E7%A6%BB%E6%8E%A8%E5%AF%BC.html"/>
+    <id>https://www.liuyuan.live/Articles/超平面中点到直线距离推导.html</id>
+    <published>2017-07-17T04:41:11.000Z</published>
+    <updated>2017-07-17T04:55:07.000Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>支持向量机 SVM </p>
+<p>超平面中点到直线距离的推导<br><img src="http://okn3yh48r.bkt.clouddn.com/17-7-17/4163263.jpg" alt="屏幕快照 2017-03-11 15.16.52"></p>
+<p>转载自博客<br><a href="http://blog.csdn.net/amyaguang/article/details/46043885" target="_blank" rel="external">http://blog.csdn.net/amyaguang/article/details/46043885</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css&quot;&gt;&lt;p&gt;支持向量机 SVM &lt;/p&gt;
+&lt;p&gt;超平面中点到直线距离的推导&lt;br&gt;&lt;img src=&quot;http://okn3yh48r.bkt.clouddn.com/17-7-17/4163263.jpg&quot; alt=&quot;屏幕快照 2017-03-11 15.16.52&quot;&gt;&lt;/p&gt;
+&lt;p&gt;转载自博客&lt;br&gt;&lt;a href=&quot;http://blog.csdn.net/amyaguang/article/details/46043885&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/amyaguang/article/details/46043885&lt;/a&gt;&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
+    
+    
+      <category term="Machine Learning" scheme="https://www.liuyuan.live/tags/Machine-Learning/"/>
+    
+      <category term="SVM" scheme="https://www.liuyuan.live/tags/SVM/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>链表操作</title>
+    <link href="https://www.liuyuan.live/LeetCode/%E9%93%BE%E8%A1%A8%E6%93%8D%E4%BD%9C.html"/>
+    <id>https://www.liuyuan.live/LeetCode/链表操作.html</id>
+    <published>2017-07-17T04:36:44.000Z</published>
+    <updated>2017-07-17T05:01:07.000Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><ul>
+<li>遍历链表 </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (Node x = first; x != <span class="keyword">null</span>; x = x.next)&#123;</div><div class="line">            <span class="comment">//...</span></div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>删除链表某个节点</li>
+</ul>
+<pre><code class="java">x.next = x.next.next
+</code></pre>
+<ul>
+<li>插入节点t</li>
+</ul>
+<pre><code class="java">t.next = x.next;  x.next = t;
+</code></pre>
+<ul>
+<li>第二节点插入链表 成为第一节点的后续节点</li>
+</ul>
+<pre><code class="java"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertAfter</span><span class="params">(Node x, Node y)</span></span>{
+        <span class="keyword">if</span> (x == <span class="keyword">null</span> || y == <span class="keyword">null</span>)  <span class="keyword">return</span>;
+        y.next = x.next;
+        x.next = y;
+    }
+</code></pre>
+<ul>
+<li>删除链表中所有item 等于key 的节点</li>
+</ul>
+<pre><code class="java"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removekeynode</span><span class="params">(Node first,Item item)</span></span>{
+        <span class="keyword">while</span> (first != <span class="keyword">null</span> &amp;&amp; item.equals(first.item)){
+            first = first.next;
+        }
+
+        Node current = first;
+        Node node;
+    <span class="keyword">while</span> (current != <span class="keyword">null</span> &amp;&amp; current.next != <span class="keyword">null</span>){
+        node = current.next;
+        <span class="keyword">if</span> (item.equals(node.item)){
+            current.next = node.next;
+        }<span class="keyword">else</span> {
+            current = node;
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>返回链表中键最大的节点的值；</li>
+</ul>
+<pre><code class="java"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">max</span><span class="params">(Node first)</span></span>{
+        <span class="keyword">int</span> m = <span class="number">0</span>;
+        <span class="keyword">if</span> (first == <span class="keyword">null</span>)  <span class="keyword">return</span> m;
+        <span class="keyword">for</span>(Node x = first; x != <span class="keyword">null</span>; x = x.next){
+            <span class="keyword">if</span> ((<span class="keyword">int</span>)x.item &gt; m) m = (<span class="keyword">int</span>)x.item;
+        }
+        <span class="keyword">return</span> m;
+    }
+</code></pre>
+<ul>
+<li>链表反转</li>
+</ul>
+<pre><code class="java"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span></span>{
+        Item item;
+        Node next;
+    }
+
+
+<span class="comment">// 迭代实现</span>
+    <span class="function"><span class="keyword">public</span> Node <span class="title">reverse</span><span class="params">(Node head)</span></span>{
+        Node preNode = <span class="keyword">null</span>;
+        Node current = head;
+        Node nextNode;
+
+        <span class="keyword">while</span>(current != <span class="keyword">null</span>){
+            nextNode = current.next;
+            current.next = preNode;
+            preNode = current;
+            current = nextNode;
+        }
+        <span class="keyword">return</span> preNode;
+    }
+
+<span class="comment">// 递归实现</span>
+<span class="comment">// 迭代实现</span>
+    <span class="function"><span class="keyword">public</span> Node <span class="title">reverse</span><span class="params">(Node current)</span></span>{
+        <span class="keyword">if</span> (current == <span class="keyword">null</span> || current.next == <span class="keyword">null</span>) <span class="keyword">return</span> current;
+        Node nextNode = current.next;
+        current.next = <span class="keyword">null</span>;
+        Node reverseRest = reverse(nextNode);
+        nextNode.next = current;
+        <span class="keyword">return</span> reverseRest;
+    }
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css&quot;&gt;&lt;ul&gt;
+&lt;li&gt;遍历链表 &lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (Node x = first; x != &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;; x = x.next)&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;ul&gt;
+&lt;li&gt;删除链表某个节点&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;x.next = x.next.next
+&lt;/code&gt;&lt;/pre&gt;
+    
+    </summary>
+    
+      <category term="-LeetCode" scheme="https://www.liuyuan.live/categories/LeetCode/"/>
+    
+    
+      <category term="-Algorithm -LinkedList" scheme="https://www.liuyuan.live/tags/Algorithm-LinkedList/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>链表题目思路 LeetCode</title>
+    <link href="https://www.liuyuan.live/LeetCode/%E9%93%BE%E8%A1%A8%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF.html"/>
+    <id>https://www.liuyuan.live/LeetCode/链表题目思路.html</id>
+    <published>2017-07-17T04:26:45.000Z</published>
+    <updated>2017-07-17T05:04:52.000Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>####<strong>1 判断单链表是否有环</strong><br>LeetCode 141. Linked List Cycle<br>思路： 设定两个指针slow, fast. 后者每次都走一步。若干次循环后，如果有环：要么fast追上slow，比slow多走一圈；如果没有环：fast先到链表末端。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 141. Linked List Cycle</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Linked_List_Cycle</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hasCycle</span><span class="params">(self, head)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line">        :type head: ListNode</div><div class="line">        :rtype: bool</div><div class="line">        """</div><div class="line">        <span class="keyword">if</span> head <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> head.next <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line"></div><div class="line">        slow = head</div><div class="line">        fast = head.next</div><div class="line"></div><div class="line">        <span class="keyword">while</span>(slow != fast):</div><div class="line">            <span class="keyword">if</span> fast <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> fast.next <span class="keyword">is</span> <span class="keyword">None</span> :</div><div class="line">                <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line">            slow = slow.next</div><div class="line">            fast = fast.next.next</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">True</span></div></pre></td></tr></table></figure>
+<p>1.1 求环的长度<br>方法一：循环开始时计数，当第一次相遇时步数相减<br>方法二：第一次相遇时开始计数，第二次相遇时终止计数</p>
+<p>1.2 判断环的入口<br>碰撞点到连接点的距离 等于 头指针到连接点的距离。<br>设置两个指针，分别从头和碰撞点开始走，每次各走一步，第一次相遇的点即为连接点</p>
+<p>1.3 判断两个单链表是否相交<br>将其中一个单链表首尾相连，然后判断另一个是否有环</p>
+<h4 id="2-找两个单链表的交点"><a href="#2-找两个单链表的交点" class="headerlink" title="2 找两个单链表的交点"></a>2 找两个单链表的交点</h4><p>LeetCode 160.Intersection of Two Linked Lists</p>
+<p><img src="http://okn3yh48r.bkt.clouddn.com/17-7-17/99103702.jpg" alt=""></p>
+<p>思路 1<br>a链长+c链长+b链长 = b链长+c链长+a链长<br>所以如果相交 两个头指针走过相同长度 一定相遇 相遇点就是交点<br>注意从headA 走到None 的时候  换到headB继续走； headB 同理</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Definition for singly-linked list.</span></div><div class="line"><span class="comment"># class ListNode(object):</span></div><div class="line"><span class="comment">#     def __init__(self, x):</span></div><div class="line"><span class="comment">#         self.val = x</span></div><div class="line"><span class="comment">#         self.next = None</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getIntersectionNode</span><span class="params">(self, headA, headB)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line">        :type head1, head1: ListNode</div><div class="line">        :rtype: ListNode</div><div class="line">        """</div><div class="line"></div><div class="line">        </div><div class="line">        a = headA</div><div class="line">        b = headB</div><div class="line">        </div><div class="line">        <span class="keyword">while</span> a != b :</div><div class="line">            <span class="keyword">if</span> a == <span class="keyword">None</span>:</div><div class="line">                a = headB</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                a = a.next</div><div class="line">                </div><div class="line">            <span class="keyword">if</span> b == <span class="keyword">None</span>:</div><div class="line">                b = headA</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                b = b.next</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">       </div><div class="line">``` </div><div class="line"></div><div class="line">思路 <span class="number">2</span> </div><div class="line">hash法</div><div class="line">遍历两条链求长度</div><div class="line">保存较短的链</div><div class="line">遍历较长的链 如果有出现在较短的链中的元素 则存在交点</div><div class="line"></div><div class="line">思路 <span class="number">3</span></div><div class="line">先求两链长度 较长的先走 LengthA - LengthB 步</div><div class="line">然后再一起走 </div><div class="line"></div><div class="line"><span class="comment">#### 3 反转单链表</span></div><div class="line"></div><div class="line">迭代思路： 三个一组  pre cur next 每次循环翻转 pre cur之间的链接  注意设<span class="keyword">None</span> 以及最后返回 pre</div><div class="line"></div><div class="line">LeetCode <span class="number">206.</span> Reverse Linked List</div><div class="line"></div><div class="line"></div><div class="line">```python</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">reverseList</span><span class="params">(self, head)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line">        :type head: ListNode</div><div class="line">        :rtype: ListNode</div><div class="line">        """</div><div class="line">        preItem = <span class="keyword">None</span></div><div class="line">        curItem = head</div><div class="line">        <span class="keyword">while</span> curItem != <span class="keyword">None</span>:</div><div class="line">            nextItem = curItem.next</div><div class="line">            curItem.next = preItem</div><div class="line">            preItem = curItem</div><div class="line">            curItem = nextItem</div><div class="line">        </div><div class="line">        head = preItem </div><div class="line">        <span class="keyword">return</span> head</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css&quot;&gt;&lt;p&gt;####&lt;strong&gt;1 判断单链表是否有环&lt;/strong&gt;&lt;br&gt;LeetCode 141. Linked List Cycle&lt;br&gt;思路： 设定两个指针slow, fast. 后者每次都走一步。若干次循环后，如果有环：要么fast追上slow，比slow多走一圈；如果没有环：fast先到链表末端。&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 141. Linked List Cycle&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Linked_List_Cycle&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(object)&lt;/span&gt;:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;hasCycle&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, head)&lt;/span&gt;:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;string&quot;&gt;&quot;&quot;&quot;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        :type head: ListNode&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        :rtype: bool&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &quot;&quot;&quot;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; head &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;None&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;or&lt;/span&gt; head.next &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;None&lt;/span&gt;:&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;False&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        slow = head&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        fast = head.next&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(slow != fast):&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; fast &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;None&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;or&lt;/span&gt; fast.next &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;None&lt;/span&gt; :&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;False&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            slow = slow.next&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            fast = fast.next.next&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;1.1 求环的长度&lt;br&gt;方法一：循环开始时计数，当第一次相遇时步数相减&lt;br&gt;方法二：第一次相遇时开始计数，第二次相遇时终止计数&lt;/p&gt;
+&lt;p&gt;1.2 判断环的入口&lt;br&gt;碰撞点到连接点的距离 等于 头指针到连接点的距离。&lt;br&gt;设置两个指针，分别从头和碰撞点开始走，每次各走一步，第一次相遇的点即为连接点&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="-LeetCode" scheme="https://www.liuyuan.live/categories/LeetCode/"/>
+    
+    
+      <category term="-Algorithm -LinkedList" scheme="https://www.liuyuan.live/tags/Algorithm-LinkedList/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>C++学习笔记</title>
+    <link href="https://www.liuyuan.live/C/cpplearning.html"/>
+    <id>https://www.liuyuan.live/C/cpplearning.html</id>
+    <published>2017-07-17T04:22:00.000Z</published>
+    <updated>2017-07-17T04:54:49.000Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><strong>extern</strong><br>extern是一个关键字，它告诉编译器存在着一个变量或者一个函数，如果在当前编译语句的前面中没有找到相应的变量或者函数，也会在当前文件的后面或者其它文件中定义，来看下面的例子</p>
+<p>关键字extern表明是引用声明，即声明引用在其他地方定义的变量。</p>
+<p>extern 修饰符通常用于当有两个或多个文件共享相同的全局变量或函数的时候</p>
+<p><strong>类型限定符</strong></p>
+<ul>
+<li>const    const 类型的对象在程序执行期间不能被修改改变。</li>
+<li>volatile    修饰符 volatile 告诉编译器，变量的值可能以程序未明确指定的方式被改变。</li>
+<li>restrict    由 restrict 修饰的指针是唯一一种访问它所指向的对象的方式。只有 C99 增加了新的类型限定符 restrict。指针指向的对象只能通过这个指针访问，这对编译器的优化很有好处。</li>
+</ul>
+<ul>
+<li>关键字volatile表明，即使程序代码没有对内存单元进行修改，其值也可能发生变化。例如，可以将指针指向某个硬件位置，其中包含了来自串行端口的时间和信息。在这种情况下，硬件（而不是程序）可能修改其中的内容。或者两个程序可能互相影响，共享数据。该关键字的作用是为了改善编译器的优化能力。例如，假设编译器发现，程序在几条语句中连续使用了某个变量的值，则编译器可能不是让程序查找这个值两次，而是将这个值缓存到寄存器中。这种优化假设变量的值在着来那个词使用之间不会变化。如果不将变量声明为volatile，则编译器将进行这种优化：将变量声明为volatile，相当于告诉编译器，不要进行这种优化。</li>
+</ul>
+<p><strong>存储类说明符</strong></p>
+<ul>
+<li>auto（C++ 11后不再是）</li>
+<li>static</li>
+<li>extern</li>
+<li>mutable</li>
+<li>thread_local (C++11)</li>
+</ul>
+<p>使用 thread_local 说明符声明的变量仅可在它在其上创建的线程上访问。 变量在创建线程时创建，并在销毁线程时销毁。 每个线程都有其自己的变量副本。</p>
+<p>可以将 thread_local 仅应用于数据声明和定义，thread_local 不能用于函数声明或定义。<br>下面是可以用thread_local定义的变量</p>
+<ul>
+<li>命名空间下的全局变量</li>
+<li>类的static成员变量</li>
+<li>本地变量</li>
+</ul>
+<hr>
+<p><strong>值传递：</strong></p>
+<p>形参是实参的拷贝，改变形参的值并不会影响外部实参的值。从被调用函数的角度来说，值传递是单向的（实参-&gt;形参），参数的值只能传入，</p>
+<p>不能传出。当函数内部需要修改参数，并且不希望这个改变影响调用者时，采用值传递。</p>
+<p><strong>指针传递：</strong></p>
+<p>形参为指向实参地址的指针，当对形参的指向操作时，就相当于对实参本身进行的操作</p>
+<p><strong>引用传递：</strong></p>
+<p>形参相当于是实参的“别名”，对形参的操作其实就是对实参的操作，在引用传递过程中，被调函数的形式参数虽然也作为局部变量在栈</p>
+<p><strong>引用的规则：</strong><br>（1）引用被创建的同时必须被初始化（指针则可以在任何时候被初始化）。 </p>
+<p>（2）不能有NULL引用，引用必须与合法的存储单元关联（指针则可以是NULL）。<br>（3）一旦引用被初始化，就不能改变引用的关系（指针则可以随时改变所指的对象）。 </p>
+<p><strong>常量是不可寻址的，但常变量是可寻址的</strong>，如：<br>    p_age=&amp;20； //错误<br>    const float PI=3.14159;<br>    float *pointer=&PI; //正确</p>
+<p><strong>常量指针 指针常量</strong><br><img src="http://okn3yh48r.bkt.clouddn.com/17-7-17/5442272.jpg" alt="屏幕快照 2017-04-22 10.27.57"></p>
+<p>我的理解<br><strong>常量指针</strong> 强调的是 一直存在这么一个指针 指向哪里 是可以改变的<br><strong>指针常量</strong> 强调的是 有一个一直指向某个地址的指针 地址是初始化后固定的 但这个地址中存放的内容是可以改变的</p>
+<p><strong>常量指针</strong>p1：指向的地址可以变，但内容不可以重新赋值，内容的改变只能通过修改地址指向后变换。   </p>
+<p><strong>指针常量</strong>p2：指向的地址不可以重新赋值，但内容可以改变，必须初始化，地址跟随一生。</p>
+<p><strong>顶层const</strong>（top-level const）表示指针（或引用等）本身是个常量。<br><strong>底层const</strong>（low-level const）表示指针指的对象是一个常量。</p>
+<hr>
+<p><strong>派生类</strong><br>一个派生类继承了所有的基类方法，但下列情况除外：</p>
+<ul>
+<li>基类的构造函数、析构函数和拷贝构造函数。</li>
+<li>基类的重载运算符。</li>
+<li>基类的友元函数。</li>
+</ul>
+<p><strong>继承类型</strong><br>当一个类派生自基类，该基类可以被继承为 public、protected 或 private 几种类型。继承类型是通过上面讲解的访问修饰符 access-specifier 来指定的。<br>我们几乎不使用 protected 或 private 继承，通常使用 public 继承。当使用不同类型的继承时，遵循以下几个规则：<br><strong>公有继承</strong>（public）：当一个类派生自公有基类时，基类的公有成员也是派生类的公有成员，基类的保护成员也是派生类的保护成员，基类的私有成员不能直接被派生类访问，但是可以通过调用基类的公有和保护成员来访问。</p>
+<p>保护继承（protected）： 当一个类派生自保护基类时，基类的公有和保护成员将成为派生类的保护成员。<br>私有继承（private）：当一个类派生自私有基类时，基类的公有和保护成员将成为派生类的私有成员。</p>
+<hr>
+<p><strong>“箭头（-&gt;）”和“点号（.）”操作符的区别</strong><br>箭头（-&gt;）：左边必须为指针；<br>点号（.）：左边必须为实体。</p>
+<hr>
+<p><strong>decltype</strong>作为操作符，用于查询表达式的数据类型</p>
+<hr>
+<p>const 成员函数</p>
+<p>任何不会修改数据成员的函数都应该声明为const类型。<br>　　这是把整个函数修饰为const，意思是“函数体内不能对成员数据做任何改动”。如果你声明这个类的一个const实例，那么它就只能调用有const修饰的函数。<br>std::string isbn() const { return bookNo;}</p>
+<p>double avg_price() const;</p>
+<p>出于编程风格考虑， 定义的类的所有成员是public的时候 用struct  存在private的成员的时候 用class</p>
+<hr>
+<p>不要保存end 返回的迭代器  要每次都调用 v.end()</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css&quot;&gt;&lt;p&gt;&lt;strong&gt;extern&lt;/strong&gt;&lt;br&gt;extern是一个关键字，它告诉编译器存在着一个变量或者一个函数，如果在当前编译语句的前面中没有找到相应的变量或者函数，也会在当前文件的后面或者其它文件中定义，来看下面的例子&lt;/p&gt;
+&lt;p&gt;关键字extern表明是引用声明，即声明引用在其他地方定义的变量。&lt;/p&gt;
+&lt;p&gt;extern 修饰符通常用于当有两个或多个文件共享相同的全局变量或函数的时候&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;类型限定符&lt;/strong&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="C++" scheme="https://www.liuyuan.live/categories/C/"/>
+    
+    
+      <category term="C++" scheme="https://www.liuyuan.live/tags/C/"/>
+    
+  </entry>
   
   <entry>
     <title>CS231n 中的概念 公式 Tricks 总结--神经网络（三）</title>
@@ -124,7 +396,7 @@
 <p>  <strong>Sigmoid函数饱和使得梯度消失</strong>： 观察图像，如果神经元在激活在接近0或1处时会饱和，此时图像上斜率几乎为0，即梯度为0.反向传播的时候，就会在饱和神经元处终止传播。为了防止这个现象，对于权重矩阵W初始化要特别留意，要使得神经元输入WX落到中间的斜率远远大于零的曲线部分。如果初始化权重过大，则大多数神经元将会饱和，导致网络就几乎不学习了。</p>
 <p> <strong>Sigmoid函数的输出不是零中心的</strong>： 如果输入神经元的数据总是正数（比如在f=w^Tx+b中每个元素都x&gt;0），那么关于w的梯度在反向传播的过程中，将会要么全部是正数，要么全部是负数。Sigmoid函数的输出不是零中心的，这将会导致梯度下降权重更新时出现z字型的下降。</p>
 </blockquote>
-<p><strong>Tanh</strong><br> 将实数值压缩到[-1,1]之间。和sigmoid神经元一样，它也存在饱和问题，但是和sigmoid神经元不同的是，它的输出是零中心的。tanh神经元是一个简单放大的sigmoid神经元:<img src="/Articles/media/14909252301479/14909269359605.jpg" alt=""></p>
+<p><strong>Tanh</strong><br> 将实数值压缩到[-1,1]之间。和sigmoid神经元一样，它也存在饱和问题，但是和sigmoid神经元不同的是，它的输出是零中心的。tanh神经元是一个简单放大的sigmoid神经元:<img src="media/14909252301479/14909269359605.jpg" alt=""></p>
 <p><strong>ReLu</strong><br>左边是ReLU（校正线性单元：Rectified Linear Unit）激活函数，当x=0时函数值为0。当x&gt;0函数的斜率为1。右边是从 Krizhevsky等的论文中截取的图表，指明使用ReLU比使用tanh的收敛快6倍。<br><img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909270657937.png" alt=""></p>
 <p>ReLu :  <img src="http://okn3yh48r.bkt.clouddn.com/media/14909252301479/14909270584102.jpg" alt=""></p>
 <blockquote>
