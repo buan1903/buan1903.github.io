@@ -170,8 +170,8 @@
         <category>Articles</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>Android</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -197,13 +197,13 @@
         <tag>TensorFlow</tag>
         <tag>Machine Learning</tag>
         <tag>Diary</tag>
-        <tag>Java</tag>
         <tag>Python</tag>
+        <tag>Tech</tag>
         <tag>Android</tag>
+        <tag>Java</tag>
         <tag>Computer Vision</tag>
         <tag>NLP</tag>
         <tag>Web</tag>
-        <tag>Tech</tag>
         <tag>Hexo</tag>
         <tag>Github</tag>
         <tag>Git</tag>

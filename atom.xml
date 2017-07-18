@@ -1032,9 +1032,9 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
       <category term="Articles" scheme="https://www.liuyuan.live/categories/Articles/"/>
     
     
-      <category term="Java" scheme="https://www.liuyuan.live/tags/Java/"/>
-    
       <category term="Android" scheme="https://www.liuyuan.live/tags/Android/"/>
+    
+      <category term="Java" scheme="https://www.liuyuan.live/tags/Java/"/>
     
   </entry>
   
@@ -1098,19 +1098,19 @@ print &quot;\nthe total error rate is : %f&quot; % (errorCount/float(mTest))
     
       <category term="Diary" scheme="https://www.liuyuan.live/tags/Diary/"/>
     
-      <category term="Java" scheme="https://www.liuyuan.live/tags/Java/"/>
-    
       <category term="Python" scheme="https://www.liuyuan.live/tags/Python/"/>
     
+      <category term="Tech" scheme="https://www.liuyuan.live/tags/Tech/"/>
+    
       <category term="Android" scheme="https://www.liuyuan.live/tags/Android/"/>
+    
+      <category term="Java" scheme="https://www.liuyuan.live/tags/Java/"/>
     
       <category term="Computer Vision" scheme="https://www.liuyuan.live/tags/Computer-Vision/"/>
     
       <category term="NLP" scheme="https://www.liuyuan.live/tags/NLP/"/>
     
       <category term="Web" scheme="https://www.liuyuan.live/tags/Web/"/>
-    
-      <category term="Tech" scheme="https://www.liuyuan.live/tags/Tech/"/>
     
       <category term="Hexo" scheme="https://www.liuyuan.live/tags/Hexo/"/>
     
